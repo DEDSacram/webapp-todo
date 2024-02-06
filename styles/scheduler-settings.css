@@ -1,0 +1,72 @@
+:root{
+  --bs-background: #002a38;
+  --bs-primary : #385170;
+  --bs-primarytransparent: #38517099;
+  --bs-secondary: #ececec;
+  --bs-special : #9fd3c7;
+  --bs-basefontcolor : #ececec;
+  --bs-basefont: Menlo, monospace;
+  --bs-blackout: black;
+}
+
+  * {
+    padding: 0;
+    margin: 0;
+}
+
+body{
+  background-color: var(--bs-background);
+  font-family: var(--bs-basefont);
+  color: var(--bs-secondary);
+ 
+  display: flex;
+  flex-direction: column;
+}
+
+#colorpicker{
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    user-select: none;
+  }
+  
+  #colorpickerside{
+    display: flex;
+    flex-direction: row;
+
+  }
+  #sidepicker{
+    width: 20px;
+    min-height: 100%;
+    background: linear-gradient(0, rgba(0,0,0,1) 0%, rgba(255,166,10,1) 100%);
+  }
+
+
+  #settingsDialog{
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #385170;
+    border: var(--bs-secondary) 2px solid;
+    border-radius: 1rem;
+    padding: 2vw;
+    z-index: 150;
+    /* on top */
+    opacity: 1;
+    color: var(--bs-basefontcolor);
+  }
+
+
+  .modal-container {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    opacity: 50%;
+    background-color: var(--bs-blackout);
+    display: flex;
+  }

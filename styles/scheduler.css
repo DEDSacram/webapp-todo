@@ -1,0 +1,205 @@
+:root{
+  --bs-background: #002a38;
+  --bs-primary : #385170;
+  --bs-primarytransparent: #38517099;
+  --bs-secondary: #ececec;
+  --bs-special : #9fd3c7;
+  --bs-basefontcolor : #ececec;
+  --bs-basefont: Menlo, monospace;
+  --bs-blackout: black;
+
+  --bs-hover: #2d3e50;  /* New hover color */
+}
+
+  * {
+    padding: 0;
+    margin: 0;
+}
+
+body{
+  background-color: var(--bs-background);
+  font-family: var(--bs-basefont);
+  color: var(--bs-secondary);
+ 
+  display: flex;
+}
+
+
+
+
+
+
+
+
+
+/* settings */
+
+
+#settings svg{
+  margin-top: 10px;
+  height: 50%;
+  color: var(--bs-secondary);
+  fill: var(--bs-secondary);
+}
+
+#settings{
+  position: absolute;
+  right: 0;
+  margin-right: 30px;
+  display: flex;
+  height: 30px;
+  padding: 10px;
+  align-items: center;
+  border-radius: 0 0 10px 10px;
+  background-color: var(--bs-special);
+
+}
+#edit{
+  position: absolute;
+  right: 0;
+  margin-right: 70px;
+  display: flex;
+  height: 30px;
+  padding: 10px;
+  align-items: center;
+  border-radius: 0 0 10px 10px;
+  background-color: var(--bs-special);
+}
+
+#edit svg{
+  margin-top: 10px;
+  height: 50%;
+  color: var(--bs-secondary);
+  fill: var(--bs-secondary);
+}
+
+
+#addtask{
+  display: block;
+  justify-content: center;
+}
+/* Sidebar styles */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 0px;
+  height: 100%;
+  background: var(--bs-primary);
+  position: fixed;
+  overflow-x: hidden;
+  transition: 0.3s;
+  z-index: 8;
+}
+
+
+
+.sidebar button {
+  background-color: var(--bs-primary);
+  width: 100%;
+  padding: 20px;
+  text-decoration: none;
+  font-size: 20px;
+  color: var(--bs-basefontcolor);
+  border: var(--bs-secondary) 1px solid;
+  display: block;
+  transition: 0.3s;
+}
+
+.sidebar button:hover {
+  background-color: var(--bs-hover);
+}
+
+.sidebar .close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 30px;
+  cursor: pointer;
+}
+
+/* Main container styles */
+#main-container {
+  display: flex;
+  flex-direction: row; /* Change flex-direction to row */
+  justify-content: space-between;
+  width: 100%;
+  height: 100vh;
+  gap: 1rem;
+}
+#main-container.sidebar-expanded {
+  width: calc(100% - 250px); /* reduce width by sidebar width */
+}
+
+
+
+.hidden{
+  display: none;
+}
+
+.container{
+  flex: 1; /* This will make the container take up the rest of the space */
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  height: 100%;
+  gap: 1rem;
+}
+
+/* Collapse sidebar on small screens */
+@media screen and (max-width: 768px) {
+  .sidebar {
+      width: 0;
+  }
+  .main-container {
+      margin-left: 0;
+  }
+}
+
+.sidebar-closed {
+  width: 0;
+}
+
+.sidebar-expanded {
+  margin-left: 250px;
+}
+
+#sidebar-todos{
+  height: 100%;
+}
+
+
+
+
+
+#Hamburgur{
+  top: 20px;
+  left: 20px;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  z-index: 5;
+}
+
+#Hamburgur svg{
+  stroke: var(--bs-secondary);
+  fill: var(--bs-secondary);
+}
+
+.draggable {
+  padding: 1rem;
+  background-color: var(--bs-primary);
+  border: 1px solid var(--bs-secondary);
+  cursor: move;
+}
+
+
+.todo-list {
+  padding: 1rem;
+  background-color: var(--bs-primary);
+  border: 1px solid var(--bs-secondary);
+  cursor: pointer;
+}
+
+.draggable.dragging {
+  opacity: .5;
+}
