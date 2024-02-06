@@ -60,6 +60,7 @@ function getToDoLists($userId) {
 
 function getItemsInToDoList($listId, $userId) {
     $db = new Database();
+    //changed left join to right join to get all the items in the list including null ones in selection (special case)
     $sql = "SELECT 
     ToDoItems.ItemID, 
     ToDoItems.ItemName, 
@@ -68,7 +69,7 @@ function getItemsInToDoList($listId, $userId) {
     Subcategories.Order
 FROM 
     ToDoItems 
-LEFT JOIN 
+RIGHT JOIN 
     Subcategories 
 ON 
     ToDoItems.ItemID = Subcategories.ItemID
