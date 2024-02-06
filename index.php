@@ -12,6 +12,7 @@ if (isset($_SESSION['guard']) && $_SESSION['guard'] == false) {
   exit;
 }
 
+
 ob_end_flush();
 ?>
 <!DOCTYPE html>
@@ -53,6 +54,11 @@ ob_end_flush();
       <button onclick="backToTodoLists()">Backto</button>
       <button onclick="addnew()" id="addtask">+</button>
       <button onclick="createDrag()" id="addtaskdd">+</button>
+      <!-- These will be saved too, create an additional db -->
+      <div class="container" id="sidebar-items">
+            <!-- <p class="draggable" draggable="true">1</p>
+            <p class="draggable" draggable="true">2</p> -->
+        </div>
     </div>
     <div id="manage_todo_lists">
       <button onclick="addnewtodolist()">+</button>
@@ -180,13 +186,31 @@ ob_end_flush();
         remembertochange.push(child);
         array.push(child.textContent); // here we get the same order as we will get last inserted ids from the db
       }
+      // maybe all were deleted
+      if(remembertochange.length === 0) {
+              // get list of tasks
+              let formData = new FormData();
+        formData.append("action", "getitemsintodolist");
+        formData.append("ListID", listId);
+        fetch(window.location.origin + "/api/app.php", {
+          method: "POST",
+          body: formData,
+          credentials: 'include' // Include cookies in the request
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log(data);
+        });
+        sessionStorage.removeItem('savenewTodoLists');
+        return;
+      }
 
       // save all these
       let data = {
         action: "addtodolist",
         ListNameArray: array
       };
-
+      // send the data to the server create new and send back their ids
       fetch(window.location.origin + "/api/app.php", {
         method: "POST",
         body: JSON.stringify(data),
@@ -205,10 +229,33 @@ ob_end_flush();
         });
         //set current todolist number
         sessionStorage.setItem("currentTodoListNumber", this.getAttribute("data-id"));
+        // set that there are no new lists
+        sessionStorage.removeItem('savenewTodoLists');
       })
       .catch(error => {
         console.log("Error:", error);
       });
+
+
+      // dont need to save new todolists because I already checked if there are any
+      if(listId !== null) {
+              // get list of tasks
+              let formData = new FormData();
+        formData.append("action", "getitemsintodolist");
+        formData.append("ListID", listId);
+        fetch(window.location.origin + "/api/app.php", {
+          method: "POST",
+          body: formData,
+          credentials: 'include' // Include cookies in the request
+        })
+        .then(response => response.json())
+        .then(data => {
+          sessionStorage.setItem("currentTodoListNumber", this.getAttribute("data-id"));
+          console.log(data);
+        });
+        return;
+      }
+
     }
 
     function backToTodoLists() {
