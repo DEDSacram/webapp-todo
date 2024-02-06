@@ -57,7 +57,7 @@ loginCancel.addEventListener("click", () => {
 });
 
 loginForm.addEventListener('submit', function(event) {
-        event.preventDefault();
+        event.preventDefault()
 
         let formElements = event.target.elements;
         // Access form fields by their names
