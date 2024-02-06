@@ -134,7 +134,7 @@ ob_end_flush();
       managetasks.classList.remove("hidden");
 
       let listId = this.getAttribute("data-id");
-
+      sessionStorage.setItem("currentTodoListNumber", listId);
       // save new created to-do lists
       // call to dom
       if (sessionStorage.getItem('savenewTodoLists') != 'true') {
@@ -164,11 +164,11 @@ ob_end_flush();
         return;
       }
 
-      const listId_temporary = this.getAttribute("data-id-new");
-
       // create an array for form data
       const todoListsContainer = document.getElementById("todo-lists");
       let array = [];
+
+      let remembertochange = [];
 
       for (let i = 0; i < todoListsContainer.children.length; i++) {
         const child = todoListsContainer.children[i];
@@ -177,13 +177,13 @@ ob_end_flush();
         if (listId !== null) {
           break;
         }
+        remembertochange.push(child);
         array.push(child.textContent); // here we get the same order as we will get last inserted ids from the db
       }
 
       // save all these
       let data = {
         action: "addtodolist",
-        UserID: "6", // replace with the actual user ID
         ListNameArray: array
       };
 
@@ -197,7 +197,14 @@ ob_end_flush();
       })
       .then(response => response.json())
       .then(data => {
-        console.log(data);
+        remembertochange.forEach((child, index) => {
+          const lastInsertedIds = data.lastInsertedIds;
+          const listId = lastInsertedIds[index];
+            child.removeAttribute('data-id-new');
+            child.setAttribute("data-id", listId);
+        });
+        //set current todolist number
+        sessionStorage.setItem("currentTodoListNumber", this.getAttribute("data-id"));
       })
       .catch(error => {
         console.log("Error:", error);
@@ -205,6 +212,7 @@ ob_end_flush();
     }
 
     function backToTodoLists() {
+      sessionStorage.removeItem("currentTodoListNumber");
       const manageTodoLists = document.getElementById("manage_todo_lists");
       manage_todo_lists.classList.remove("hidden");
 
