@@ -61,6 +61,9 @@ function getToDoLists($userId) {
 function getItemsInToDoList($listId, $userId) {
     $db = new Database();
     //changed left join to right join to get all the items in the list including null ones in selection (special case)
+
+
+
     $sql = "SELECT 
     ToDoItems.ItemID, 
     ToDoItems.ItemName, 
@@ -82,7 +85,29 @@ WHERE
     $params = array(':listId' => $listId, ':userId' => $userId);
     $stmt = $db->query($sql, $params);
     $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+    
+    $sql2 = "SELECT ListSubcategories.ListSubcategoryID, ListSubcategories.SubcategoryName
+    FROM ListSubcategories
+    INNER JOIN ToDoLists ON ListSubcategories.ListID = ToDoLists.ListID
+    WHERE ToDoLists.ListID = :listId AND ToDoLists.UserID = :userId";
+    $stmt2 = $db->query($sql2, $params);
+    $subcategories = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+
     $db->close();
+
+
+// Additional code to handle the response
+if (count($items) > 0) {
+    $response = array(
+        'selection' => $subcategories,
+        'display' => $items
+    );
+    send_response($response);
+} else {
+    send_response(array('message' => 'No items found in the todo list.'), 404);
+}
     
     // Additional code to handle the response
     if (count($items) > 0) {
