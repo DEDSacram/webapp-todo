@@ -142,6 +142,7 @@ ob_end_flush();
     
     // log position before and after
 
+    // also need to check if container was changed
 
     // two ways I think of
     // I can check whether it has been moved up or down and then I can get from dragstart position the one from above or under however 
