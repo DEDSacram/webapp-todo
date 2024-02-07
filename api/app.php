@@ -81,7 +81,8 @@ function getItemsInToDoList($listId, $userId) {
     ON
         ToDoItems.ListID = ToDoLists.ListID
     WHERE 
-        ToDoItems.ListID = :listId AND ToDoLists.UserID = :userId";
+        ToDoItems.ListID = :listId AND ToDoLists.UserID = :userId
+    ORDER BY Subcategories.Order ASC";
     $params = array(':listId' => $listId, ':userId' => $userId);
     $stmt = $db->query($sql, $params);
     $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
