@@ -14,14 +14,14 @@
     margin: 0;
 }
 
-body{
+/* body{
   background-color: var(--bs-background);
   font-family: var(--bs-basefont);
   color: var(--bs-secondary);
  
   display: flex;
   flex-direction: column;
-}
+} */
 
 #colorpicker{
     display: flex;

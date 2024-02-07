@@ -42,8 +42,8 @@ ob_end_flush();
       });
     }
   </script>
-  <link rel="stylesheet" href="./styles/scheduler.css">
   <link rel="stylesheet" href="./styles/scheduler-settings.css">
+  <link rel="stylesheet" href="./styles/scheduler.css">
 </head>
 <body>
   <!-- Sidebar -->
@@ -97,12 +97,19 @@ ob_end_flush();
     </form>
   </div>
   <!-- Main Container -->
-  <div id="main-container"></div>
+  <div id="main-container">
+  </div>
   <script src="scheduler.js"></script>
   <script src="modal-settings.js"></script>
   <script src="colorwheel.js"></script>
   <script>
 
+    function saveall(){
+      // all that have a data-id are from database will need to save what I got from the server on the server will need to check if all ids are owned by the user (could have been changed to destroy someones data)
+      // I can save them on the browser or call to database gain
+      // I am going to call the database again and do differenciation here javascript is easier to work with + in production setting I would not want to load the server uneccesarily
+
+    }
 
         // Create a <p> tag with class "draggable" and draggable set to true
     function dynamicallycreateallfromdb(dataobject) {
@@ -136,37 +143,6 @@ ob_end_flush();
     div.classList.add('container');
 
 
-    //drag and drop
-
-    //save into to later change the order
-    
-    // log position before and after
-
-    // also need to check if container was changed
-
-    // two ways I think of
-    // I can check whether it has been moved up or down and then I can get from dragstart position the one from above or under however 
-    //this doesnt seem really good
-    // and it isnt really functional for if I move it from one container to the other
-    // so onto the second one
-    // I will get the first position from how it is before in the dom (could also use the data-order but I will prefer this) 
-    // and then I will get the position index after the drag also
-    // get position of the element form dom before and after the drag
-
-    // * I do not have to care about the ones from selection, so that is good*
-    let draggable_before = null;
-
-    let draggable = null;
-
-    let afterElement = null;
-
-
-    // only need this for ones that have been dragged are not in selection
-    div.addEventListener('dragstart', e => {
-      draggable_before = e.target.getAttribute("data-order")
-    });
-
-
     div.addEventListener('dragover', e => {
       e.preventDefault()
       afterElement = getDragAfterElement(div, e.clientY)
@@ -180,42 +156,6 @@ ob_end_flush();
       }
     })
 
-    //change order
-
-      div.addEventListener('drop', e => {
-    e.preventDefault()
-    // need to handle if it is dragged to the bottom (after element will not exist)
-
-    // check if it is from selection if yes clear its id, because otherwise I wont know its new (using dom as storage) if changed in client - wont help anything
-    let draggableorder = draggable.getAttribute("data-order") 
-    if( draggableorder == null) {
-      draggable.removeAttribute("data-id")
-    }
-
-    if (afterElement == null) {
-
-      afterElement = draggable.parentElement.lastElementChild.previousElementSibling
-      // if it will be null I need to increment
-      draggable.setAttribute("data-order", (parseInt(afterElement.getAttribute("data-order"), 10) + 1))
-
-      } else {
-        
-        // need to increment this one and all under it
-        if( draggableorder == null) {
-          // there are no items yet in the todo list
-        if(afterElement == null){
-          draggable.setAttribute("data-order", 0)
-        }
-        draggable.setAttribute("data-order", (parseInt(afterElement.getAttribute("data-order"), 10) + 1))
-        }else{
-          // isnt need dont need to increment all under it just need to swap the one that will take the place from where its been taken
-        let temp = afterElement.getAttribute("data-order")
-        afterElement.setAttribute("data-order",  (parseInt(temp, 10) + 1))
-        draggable.setAttribute("data-order", temp)
-        }
-      }
-   
-    })
 
     item.subcategories.forEach(subcategory => {
       let p = document.createElement("p");
@@ -293,7 +233,6 @@ ob_end_flush();
         })
         .then(response => response.json())
         .then(data => {
-          console.log(data.display)
           dynamicallycreateallfromdb(data);
           sessionStorage.setItem("currentTodoListNumber", this.getAttribute("data-id"));
         });
