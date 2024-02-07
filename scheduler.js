@@ -27,7 +27,7 @@ function addnew(){
     e.preventDefault()
     const afterElement = getDragAfterElement(div, e.clientY)
     const draggable = document.querySelector('.dragging')
-
+    
     //check
     if (afterElement == null) {
       div.appendChild(draggable)

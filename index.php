@@ -22,7 +22,6 @@ ob_end_flush();
     if (sessionStorage.getItem('hasCodeRunBefore') != 'true') {
       let formData = new FormData();
       formData.append("action", "checkcookie");
-      console.log(window.location.origin);
       fetch(window.location.origin + "/api/userlogin.php", {
           method: "POST",
           body: formData,
@@ -130,42 +129,47 @@ ob_end_flush();
 
       //create todoitems and its subcategories
       dataobject.display.forEach(item => {
-        // item is following object
-//         {
-//   "itemId": 5,
-//   "itemName": "Dummy Task 1",
-//   "subcategories": [
-//     {
-//       "subcategoryId": 13,
-//       "subcategoryName": "Subcategory 3 (Not NULL)",
-//       "subcategoryOrder": 1
-//     },
-//     {
-//       "subcategoryId": 14,
-//       "subcategoryName": "Subcategory 4 (Not NULL)",
-//       "subcategoryOrder": 2
-//     },
-//     {
-//       "subcategoryId": 17,
-//       "subcategoryName": "Subcategory 5 (Not NULL)",
-//       "subcategoryOrder": 3
-//     },
-//     {
-//       "subcategoryId": 18,
-//       "subcategoryName": "Subcategory 6 (Not NULL)",
-//       "subcategoryOrder": 4
-//     }
-//   ]
-// }
     const main = document.getElementById('main-container');
     let div = document.createElement("div");
     div.setAttribute('data-id', item.itemId); // Set data-id attribute
     div.textContent = item.itemName;
     div.classList.add('container');
+
+
+    //drag and drop
+
+    //save into to later change the order
+    
+    // log position before and after
+
+
+    // two ways I think of
+    // I can check whether it has been moved up or down and then I can get from dragstart position the one from above or under however 
+    //this doesnt seem really good
+    // and it isnt really functional for if I move it from one container to the other
+    // so onto the second one
+    // I will get the first position from how it is before in the dom (could also use the data-order but I will prefer this) 
+    // and then I will get the position index after the drag also
+    // get position of the element form dom before and after the drag
+
+    // * I do not have to care about the ones from selection, so that is good
+    let draggable_before = null;
+
+    let draggable = null;
+
+    let afterElement = null;
+
+
+    // only need this for ones that have been dragged are not in selection
+    div.addEventListener('dragstart', e => {
+      draggable_before = e.target.getAttribute("data-order")
+    });
+
+
     div.addEventListener('dragover', e => {
       e.preventDefault()
-      const afterElement = getDragAfterElement(div, e.clientY)
-      const draggable = document.querySelector('.dragging')
+      afterElement = getDragAfterElement(div, e.clientY)
+      draggable = document.querySelector('.dragging')
 
       //check
       if (afterElement == null) {
@@ -175,11 +179,47 @@ ob_end_flush();
       }
     })
 
-    main.appendChild(div)
+    //change order
+
+      div.addEventListener('drop', e => {
+    e.preventDefault()
+    // need to handle if it is dragged to the bottom (after element will not exist)
+
+    // check if it is from selection if yes clear its id, because otherwise I wont know its new (using dom as storage) if changed in client - wont help anything
+    let draggableorder = draggable.getAttribute("data-order") 
+    if( draggableorder == null) {
+      draggable.removeAttribute("data-id")
+    }
+
+    if (afterElement == null) {
+
+      afterElement = draggable.parentElement.lastElementChild.previousElementSibling
+      // if it will be null I need to increment
+      draggable.setAttribute("data-order", (parseInt(afterElement.getAttribute("data-order"), 10) + 1))
+
+      } else {
+        
+        // need to increment this one and all under it
+        if( draggableorder == null) {
+          // there are no items yet in the todo list
+        if(afterElement == null){
+          draggable.setAttribute("data-order", 0)
+        }
+        draggable.setAttribute("data-order", (parseInt(afterElement.getAttribute("data-order"), 10) + 1))
+        }else{
+          // isnt need dont need to increment all under it just need to swap the one that will take the place from where its been taken
+        let temp = afterElement.getAttribute("data-order")
+        afterElement.setAttribute("data-order",  (parseInt(temp, 10) + 1))
+        draggable.setAttribute("data-order", temp)
+        }
+      }
+   
+    })
 
     item.subcategories.forEach(subcategory => {
       let p = document.createElement("p");
       p.setAttribute('data-id', subcategory.subcategoryId); // Set data-id attribute
+      p.setAttribute('data-order', subcategory.subcategoryOrder); // Set data-order attribute
       p.textContent = subcategory.subcategoryName;
       p.classList.add('draggable');
       p.draggable = true;
@@ -193,7 +233,7 @@ ob_end_flush();
       div.appendChild(p);
         });
     
-
+        main.appendChild(div)
         });
 
     }
