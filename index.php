@@ -103,6 +103,24 @@ ob_end_flush();
   <script src="modal-settings.js"></script>
   <script src="colorwheel.js"></script>
   <script>
+
+
+        // Create a <p> tag with class "draggable" and draggable set to true
+    function addselectionintosidebar(dataobject) {
+      const sidebarItemsContainer = document.getElementById("sidebar-items");
+
+      dataobject.selection.forEach(item => {
+        const pTag = document.createElement("p");
+        pTag.classList.add("draggable");
+        pTag.draggable = true;
+        pTag.textContent = item.SubcategoryName;
+        pTag.setAttribute("data-id", item.ListSubcategoryID); // Add data-id attribute
+        sidebarItemsContainer.appendChild(pTag);
+      });
+    }
+ 
+
+
     function generateTodoLists() {
       // Dynamically generate content
       let formData = new FormData();
@@ -155,17 +173,8 @@ ob_end_flush();
         })
         .then(response => response.json())
         .then(data => {
-          console.log(data);
-          // const container = document.getElementById("sidebar-todos");
-          // container.innerHTML = "";
-          // data.forEach(todoItem => {
-          //   const button = document.createElement("button"); // Create a button element
-          //   button.setAttribute("data-id", todoItem.TaskID);
-          //   button.textContent = todoItem.TaskName;
-          //   button.classList.add("todo-list"); // Add the class "todo-list"
-          //   button.onclick = handleClick; // Set the onclick event to the named function handleClick
-          //   container.insertBefore(button, container.firstChild);
-          // });
+          addselectionintosidebar(data);
+          sessionStorage.setItem("currentTodoListNumber", this.getAttribute("data-id"));
         });
         return;
       }
@@ -199,7 +208,8 @@ ob_end_flush();
         })
         .then(response => response.json())
         .then(data => {
-          console.log(data);
+          addselectionintosidebar(data);
+          sessionStorage.setItem("currentTodoListNumber", this.getAttribute("data-id"));
         });
         sessionStorage.removeItem('savenewTodoLists');
         return;
@@ -251,7 +261,7 @@ ob_end_flush();
         .then(response => response.json())
         .then(data => {
           sessionStorage.setItem("currentTodoListNumber", this.getAttribute("data-id"));
-          console.log(data);
+          addselectionintosidebar(data);
         });
         return;
       }
