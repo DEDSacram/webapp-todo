@@ -153,7 +153,7 @@ ob_end_flush();
     // and then I will get the position index after the drag also
     // get position of the element form dom before and after the drag
 
-    // * I do not have to care about the ones from selection, so that is good
+    // * I do not have to care about the ones from selection, so that is good*
     let draggable_before = null;
 
     let draggable = null;
