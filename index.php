@@ -108,7 +108,7 @@ ob_end_flush();
         // Create a <p> tag with class "draggable" and draggable set to true
     function addselectionintosidebar(dataobject) {
       const sidebarItemsContainer = document.getElementById("sidebar-items");
-
+      sidebarItemsContainer.innerHTML = "";
       dataobject.selection.forEach(item => {
         const pTag = document.createElement("p");
         pTag.classList.add("draggable");
@@ -173,6 +173,7 @@ ob_end_flush();
         })
         .then(response => response.json())
         .then(data => {
+          console.log(data.display)
           addselectionintosidebar(data);
           sessionStorage.setItem("currentTodoListNumber", this.getAttribute("data-id"));
         });
