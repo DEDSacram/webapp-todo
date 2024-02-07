@@ -106,17 +106,96 @@ ob_end_flush();
 
 
         // Create a <p> tag with class "draggable" and draggable set to true
-    function addselectionintosidebar(dataobject) {
+    function dynamicallycreateallfromdb(dataobject) {
+      //selection from sidebar
       const sidebarItemsContainer = document.getElementById("sidebar-items");
       sidebarItemsContainer.innerHTML = "";
       dataobject.selection.forEach(item => {
-        const pTag = document.createElement("p");
-        pTag.classList.add("draggable");
-        pTag.draggable = true;
-        pTag.textContent = item.SubcategoryName;
-        pTag.setAttribute("data-id", item.ListSubcategoryID); // Add data-id attribute
-        sidebarItemsContainer.appendChild(pTag);
+        const p = document.createElement("p");
+        p.classList.add("draggable");
+        p.draggable = true;
+        p.textContent = item.SubcategoryName;
+        p.setAttribute("data-id", item.ListSubcategoryID); // Add data-id attribute
+
+        p.addEventListener('dragstart', () => {
+        p.classList.add('dragging')
+        })
+
+        p.addEventListener('dragend', () => {
+        p.classList.remove('dragging')
+        })
+
+        sidebarItemsContainer.appendChild(p);
       });
+
+      //create todoitems and its subcategories
+      dataobject.display.forEach(item => {
+        // item is following object
+//         {
+//   "itemId": 5,
+//   "itemName": "Dummy Task 1",
+//   "subcategories": [
+//     {
+//       "subcategoryId": 13,
+//       "subcategoryName": "Subcategory 3 (Not NULL)",
+//       "subcategoryOrder": 1
+//     },
+//     {
+//       "subcategoryId": 14,
+//       "subcategoryName": "Subcategory 4 (Not NULL)",
+//       "subcategoryOrder": 2
+//     },
+//     {
+//       "subcategoryId": 17,
+//       "subcategoryName": "Subcategory 5 (Not NULL)",
+//       "subcategoryOrder": 3
+//     },
+//     {
+//       "subcategoryId": 18,
+//       "subcategoryName": "Subcategory 6 (Not NULL)",
+//       "subcategoryOrder": 4
+//     }
+//   ]
+// }
+    const main = document.getElementById('main-container');
+    let div = document.createElement("div");
+    div.setAttribute('data-id', item.itemId); // Set data-id attribute
+    div.textContent = item.itemName;
+    div.classList.add('container');
+    div.addEventListener('dragover', e => {
+      e.preventDefault()
+      const afterElement = getDragAfterElement(div, e.clientY)
+      const draggable = document.querySelector('.dragging')
+
+      //check
+      if (afterElement == null) {
+        div.appendChild(draggable)
+      } else {
+        div.insertBefore(draggable, afterElement)
+      }
+    })
+
+    main.appendChild(div)
+
+    item.subcategories.forEach(subcategory => {
+      let p = document.createElement("p");
+      p.setAttribute('data-id', subcategory.subcategoryId); // Set data-id attribute
+      p.textContent = subcategory.subcategoryName;
+      p.classList.add('draggable');
+      p.draggable = true;
+        p.addEventListener('dragstart', () => {
+      p.classList.add('dragging')
+    })
+
+    p.addEventListener('dragend', () => {
+      p.classList.remove('dragging')
+    })
+      div.appendChild(p);
+        });
+    
+
+        });
+
     }
  
 
@@ -174,7 +253,7 @@ ob_end_flush();
         .then(response => response.json())
         .then(data => {
           console.log(data.display)
-          addselectionintosidebar(data);
+          dynamicallycreateallfromdb(data);
           sessionStorage.setItem("currentTodoListNumber", this.getAttribute("data-id"));
         });
         return;
@@ -209,7 +288,7 @@ ob_end_flush();
         })
         .then(response => response.json())
         .then(data => {
-          addselectionintosidebar(data);
+          dynamicallycreateallfromdb(data);
           sessionStorage.setItem("currentTodoListNumber", this.getAttribute("data-id"));
         });
         sessionStorage.removeItem('savenewTodoLists');
@@ -262,7 +341,7 @@ ob_end_flush();
         .then(response => response.json())
         .then(data => {
           sessionStorage.setItem("currentTodoListNumber", this.getAttribute("data-id"));
-          addselectionintosidebar(data);
+          dynamicallycreateallfromdb(data);
         });
         return;
       }

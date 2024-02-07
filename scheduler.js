@@ -3,8 +3,6 @@ function changecolors(){
 }
 
 
-
-
 function toggleSidebar() {
   const sidebar = document.querySelector('.sidebar');
   const main = document.getElementById('main-container');
