@@ -109,10 +109,13 @@ ob_end_flush();
       // I can save them on the browser or call to database gain
       // I am going to call the database again and do differenciation here javascript is easier to work with + in production setting I would not want to load the server uneccesarily
 
+
+
     }
 
         // Create a <p> tag with class "draggable" and draggable set to true
     function dynamicallycreateallfromdb(dataobject) {
+      console.log(dataobject)
       //selection from sidebar
       const sidebarItemsContainer = document.getElementById("sidebar-items");
       sidebarItemsContainer.innerHTML = "";

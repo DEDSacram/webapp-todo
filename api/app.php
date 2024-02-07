@@ -58,6 +58,9 @@ function getToDoLists($userId) {
     }
 }
 
+
+
+
 function getItemsInToDoList($listId, $userId) {
     $db = new Database();
     //changed left join to right join to get all the items in the list including null ones in selection (special case)
@@ -169,6 +172,49 @@ function addToDoList($listNames, $userId) {
     send_response($result);
 }
 
+function saveall($listId, $userId, $items) {
+    $db = new Database();
+    
+
+    // $db = new Database();
+    // $sql = "DELETE FROM `Subcategories` WHERE `ListID` = :listId";
+    // $params = array(':listId' => $listId);
+    // $stmt = $db->query($sql, $params);
+
+    // $sql = "DELETE FROM `ListSubcategories` WHERE `ListID` = :listId";
+    // $params = array(':listId' => $listId);
+    // $stmt = $db->query($sql, $params);
+
+    // $sql = "INSERT INTO `ListSubcategories` (`ListID`, `SubcategoryName`) VALUES ";
+    // $values = array();
+    // foreach ($items as $item) {
+    //     $values[] = "(:listId, :subCategoryName)";
+    // }
+    // $sql .= implode(", ", $values);
+    // $params = array();
+    // foreach ($items as $item) {
+    //     $params[] = array(':listId' => $listId, ':subCategoryName' => $item['subCategoryName']);
+    // }
+    // $stmt = $db->query($sql, $params);
+
+    // $sql = "INSERT INTO `Subcategories` (`ItemID`, `ListID`, `SubcategoryName`, `Order`) VALUES ";
+    // $values = array();
+    // foreach ($items as $item) {
+    //     foreach ($item['subcategories'] as $subCategory) {
+    //         $values[] = "(:itemId, :listId, :subCategoryName, :order)";
+    //     }
+    // }
+    // $sql .= implode(", ", $values);
+    // $params = array();
+    // foreach ($items as $item) {
+    //     foreach ($item['subcategories'] as $subCategory) {
+    //         $params[] = array(':itemId' => $item['itemId'], ':listId' => $listId, ':subCategoryName' => $subCategory['subCategoryName'], ':order' => $subCategory['subCategoryOrder']);
+    //     }
+    // }
+    // $stmt = $db->query($sql, $params);
+    // $db->close();
+}
+
 
 
 
@@ -196,6 +242,9 @@ switch ($data['action']) {
         break;
     case 'addtodolist':
         addTodoList($data['ListNameArray'], $userId);
+        break;
+    case 'saveall':
+        saveAll($data, $userId);
         break;
     case 'getitemsintodolist':
         getItemsInToDoList($data['ListID'], $userId);
