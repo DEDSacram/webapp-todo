@@ -111,6 +111,133 @@ ob_end_flush();
 
 
 
+// {
+//   "selection": [
+//     {
+//       "ListSubcategoryID": 4,
+//       "SubcategoryName": "Test Subcategory 1"
+//     },
+//     {
+//       "ListSubcategoryID": 5,
+//       "SubcategoryName": "Test Subcategory 2"
+//     },
+//     {
+//       "ListSubcategoryID": 6,
+//       "SubcategoryName": "Test Subcategory 3"
+//     }
+//   ],
+//   "display": [
+//     {
+//       "itemId": 5,
+//       "itemName": "Dummy Task 1",
+//       "subcategories": [
+//         {
+//           "subcategoryId": 13,
+//           "subcategoryName": "Subcategory 3 (Not NULL)",
+//           "subcategoryOrder": 1
+//         },
+//         {
+//           "subcategoryId": 14,
+//           "subcategoryName": "Subcategory 4 (Not NULL)",
+//           "subcategoryOrder": 2
+//         },
+//         {
+//           "subcategoryId": 17,
+//           "subcategoryName": "Subcategory 5 (Not NULL)",
+//           "subcategoryOrder": 3
+//         },
+//         {
+//           "subcategoryId": 18,
+//           "subcategoryName": "Subcategory 6 (Not NULL)",
+//           "subcategoryOrder": 4
+//         }
+//       ]
+//     },
+//     {
+//       "itemId": 6,
+//       "itemName": "Dummy Task 2",
+//       "subcategories": [
+//         {
+//           "subcategoryId": 19,
+//           "subcategoryName": "Subcategory 5 (Not NULL)",
+//           "subcategoryOrder": 1
+//         },
+//         {
+//           "subcategoryId": 20,
+//           "subcategoryName": "Subcategory 6 (Not NULL)",
+//           "subcategoryOrder": 2
+//         }
+//       ]
+//     }
+//   ]
+// }
+
+let dataobj = {
+  selection: [],
+  display: []
+};
+
+let sidebar_selection = document.getElementById("sidebar-items").children;
+
+let todoitem = document.getElementById("main-container").children;
+
+
+Array.from(sidebar_selection).forEach(item => {
+  // Your code here
+
+  let obj = {
+    ListSubcategoryID: item.getAttribute("data-id"),
+    SubcategoryName: item.textContent
+  };
+
+  (dataobj.selection).push(obj);
+});
+
+
+Array.from(todoitem).forEach(item => {
+  // Your code here
+  let obj = {
+    itemId: item.getAttribute("data-id"),
+    itemName: item.firstElementChild.textContent,
+    subcategories: []
+  };
+
+  let subcategories = Array.from(item.children);
+  subcategories.shift(); // Remove first child
+
+
+  subcategories.forEach(subcategory => {
+    let subcategoryObj = {
+      subcategoryId: subcategory.getAttribute("data-id"),
+      subcategoryName: subcategory.textContent,
+      subcategoryOrder: subcategory.getAttribute("data-order")
+    };
+
+    (obj.subcategories).push(subcategoryObj);
+  });
+
+  (dataobj.display).push(obj);
+});
+console.log("data object")
+console.log(dataobj)
+
+
+
+// todoitem.forEach(item => {
+//   // Your code here
+
+//     const dataId = item.getAttribute("data-id");
+
+
+//     console.log(dataId);
+// });
+
+
+console.log(selection,todoitem)
+
+
+
+
     }
 
         // Create a <p> tag with class "draggable" and draggable set to true
@@ -142,7 +269,9 @@ ob_end_flush();
     const main = document.getElementById('main-container');
     let div = document.createElement("div");
     div.setAttribute('data-id', item.itemId); // Set data-id attribute
-    div.textContent = item.itemName;
+    const divItem = document.createElement("div");
+    divItem.textContent = item.itemName;
+    div.appendChild(divItem);
     div.classList.add('container');
 
 
@@ -157,6 +286,15 @@ ob_end_flush();
       } else {
         div.insertBefore(draggable, afterElement)
       }
+    })
+
+    div.addEventListener('drop', e => {
+      e.preventDefault()
+      draggable = document.querySelector('.dragging')
+        if (!draggable.getAttribute('data-order')) {
+          draggable.removeAttribute('data-id');
+        }
+   
     })
 
 
@@ -332,6 +470,7 @@ ob_end_flush();
     }
 
     function backToTodoLists() {
+      saveall();
       sessionStorage.removeItem("currentTodoListNumber");
       const manageTodoLists = document.getElementById("manage_todo_lists");
       manage_todo_lists.classList.remove("hidden");
