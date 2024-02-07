@@ -65,26 +65,55 @@ function getItemsInToDoList($listId, $userId) {
 
 
     $sql = "SELECT 
-    ToDoItems.ItemID, 
-    ToDoItems.ItemName, 
-    Subcategories.SubcategoryID, 
-    Subcategories.SubcategoryName, 
-    Subcategories.Order
-FROM 
-    ToDoItems 
-RIGHT JOIN 
-    Subcategories 
-ON 
-    ToDoItems.ItemID = Subcategories.ItemID
-INNER JOIN
-    ToDoLists
-ON
-    ToDoItems.ListID = ToDoLists.ListID
-WHERE 
-    ToDoItems.ListID = :listId AND ToDoLists.UserID = :userId";
+        ToDoItems.ItemID, 
+        ToDoItems.ItemName, 
+        Subcategories.SubcategoryID, 
+        Subcategories.SubcategoryName, 
+        Subcategories.Order
+    FROM 
+        ToDoItems 
+    RIGHT JOIN 
+        Subcategories 
+    ON 
+        ToDoItems.ItemID = Subcategories.ItemID
+    INNER JOIN
+        ToDoLists
+    ON
+        ToDoItems.ListID = ToDoLists.ListID
+    WHERE 
+        ToDoItems.ListID = :listId AND ToDoLists.UserID = :userId";
     $params = array(':listId' => $listId, ':userId' => $userId);
     $stmt = $db->query($sql, $params);
-    $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $todoItems = array();
+    $subcategories = array();
+
+    //format it nicely
+
+    foreach ($results as $row) {
+        $itemId = $row['ItemID'];
+        $itemName = $row['ItemName'];
+        $subcategoryId = $row['SubcategoryID'];
+        $subcategoryName = $row['SubcategoryName'];
+        $subcategoryOrder = $row['Order'];
+
+        if (!isset($todoItems[$itemId])) {
+            $todoItems[$itemId] = array(
+                'itemId' => $itemId,
+                'itemName' => $itemName,
+                'subcategories' => array()
+            );
+        }
+
+        $todoItems[$itemId]['subcategories'][] = array(
+            'subcategoryId' => $subcategoryId,
+            'subcategoryName' => $subcategoryName,
+            'subcategoryOrder' => $subcategoryOrder
+        );
+    }
+
+    $items = array_values($todoItems);
 
 
     
