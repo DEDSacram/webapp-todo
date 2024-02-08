@@ -275,14 +275,44 @@ function find_differences($userId, $listId, $obj2) {
         }
     }
 
-    // Check for additions of null subcategories in obj2
+    
+    // // Check for additions of null subcategories in obj2
+    // foreach ($obj2 as $item) {
+    //     foreach ($item['subcategories'] as $sub) {
+    //         if ($sub['subcategoryId'] === null) {
+    //             $additions[] = new Difference($item['itemId'], null, null, "Null subcategory in item with ID {$item['itemId']} is added");
+    //         }
+    //     }
+    // }
     foreach ($obj2 as $item) {
+        $groupedAdditions = array(); 
+        $itemId = $item['itemId'];
+        $itemName = $item['itemName'];
+        $subcategories = array(); // Array to store subcategories for this item
         foreach ($item['subcategories'] as $sub) {
-            if ($sub['subcategoryId'] === null) {
-                $additions[] = new Difference($item['itemId'], null, null, "Null subcategory in item with ID {$item['itemId']} is added");
+            $subcategoryId = $sub['subcategoryId'];
+            $subcategoryName = $sub['subcategoryName'];
+            $subcategoryOrder = $sub['subcategoryOrder'];
+            // Check if subcategory ID is null
+            if ($subcategoryId === null) {
+                $subcategories[] = array(
+                    'subcategoryId' => null,
+                    'subcategoryName' => $subcategoryName,
+                    'subcategoryOrder' => $subcategoryOrder
+                );
             }
         }
+        // Add the item with its subcategories to the grouped additions array
+        $groupedAdditions = array(
+            'itemId' => $itemId,
+            'itemName' => $itemName,
+            'subcategories' => $subcategories
+        );
+        if(!empty($groupedAdditions['subcategories'])){
+            $additions[] = $groupedAdditions;
+        }
     }
+    
     
     // Check for subcategories moved to different items checkpoint
     foreach ($obj2 as $item) {
@@ -327,22 +357,45 @@ function updatemylist($userId, $listId, $obj2)
             'message' => 'No changes detected',
         ]);
     }
-    send_response([
-        'status' => 1,
-        'message' => $differences,
-    ]);
     $db = new Database();
     $db->beginTransaction();
 
-    
-    foreach ($differences->additions as $addition) {
-        $sql = "INSERT INTO Subcategories (ItemID, SubcategoryName, `Order`) VALUES (:itemId, :subcategoryName, :subcategoryOrder)";
-        $params = array(
-            ':itemId' => $addition->itemId,
-            ':subcategoryName' => $addition->attribute->subcategoryName,
-            ':subcategoryOrder' => $addition->attribute->subcategoryOrder,
-        );
-        $db->query($sql, $params);
+    // pass reference
+    foreach ($differences->additions as &$addition) {
+        // get id
+        if($addition['itemId'] == null){
+            $sql = "INSERT INTO ToDoItems (ItemName, ListID) VALUES (:itemName, :listId)";
+            $params = array(
+                ':itemName' => $addition['itemName'],
+                ':listId' => $listId,
+            );
+            $db->query($sql, $params);
+
+            $lastInsertedId = $db->getLastInsertedId();
+            $addition['itemId'] = $lastInsertedId;
+        }
+      
+      
+
+
+     
+            // Loop through subcategories
+            foreach ($addition['subcategories'] as $subcategory) {
+                // Access subcategory properties
+                $subcategoryName = $subcategory['subcategoryName'];
+                $subcategoryOrder = $subcategory['subcategoryOrder'];
+
+                // Perform operations on each subcategory
+                // ...
+                $sql = "INSERT INTO Subcategories (ItemID,SubcategoryName, `Order`) VALUES (:itemId,:subcategoryName, :subcategoryOrder)";
+                $params = array(
+                    ':itemId' => $addition['itemId'],
+                    ':subcategoryName' =>  $subcategoryName,
+                    ':subcategoryOrder' => $subcategoryOrder,
+                );
+                $db->query($sql, $params);
+            }
+      
     }
 
     
