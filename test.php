@@ -86,13 +86,27 @@ $obj2 = [
     ]
 ];
 
+class Difference {
+    public $itemId;
+    public $subcategoryId;
+    public $attribute;
+    public $message;
+
+    public function __construct($itemId, $subcategoryId, $attribute, $message) {
+        $this->itemId = $itemId;
+        $this->subcategoryId = $subcategoryId;
+        $this->attribute = $attribute;
+        $this->message = $message;
+    }
+}
+
 function find_differences($obj1, $obj2) {
     $deletions = [];
     $changes = [];
     $additions = [];
 
     if (count($obj1) != count($obj2)) {
-        $deletions[] = "Objects have different lengths";
+        $deletions[] = new Difference(null, null, null, "Objects have different lengths");
     }
 
     for ($i = 0; $i < count($obj1); $i++) {
@@ -106,7 +120,7 @@ function find_differences($obj1, $obj2) {
         }
 
         if (!$found) {
-            $deletions[] = "Item with ID $id1 is deleted";
+            $deletions[] = new Difference($id1, null, null, "Item with ID $id1 is deleted");
             continue;
         }
 
@@ -122,14 +136,14 @@ function find_differences($obj1, $obj2) {
                         $changed_attributes[] = "subcategoryOrder";
                     }
                     if (!empty($changed_attributes)) {
-                        $changes[] = "Subcategory with ID {$sub1['subcategoryId']} in item with ID $id1 has changed in: " . implode(", ", $changed_attributes);
+                        $changes[] = new Difference($id1, $sub1['subcategoryId'], implode(", ", $changed_attributes), "Subcategory with ID {$sub1['subcategoryId']} in item with ID $id1 has changed in: " . implode(", ", $changed_attributes));
                     }
                     $found = true;
                     break;
                 }
             }
             if (!$found && $sub1['subcategoryId'] !== null) {
-                $deletions[] = "Subcategory with ID {$sub1['subcategoryId']} in item with ID $id1 is deleted";
+                $deletions[] = new Difference($id1, $sub1['subcategoryId'], null, "Subcategory with ID {$sub1['subcategoryId']} in item with ID $id1 is deleted");
             }
         }
     }
@@ -137,7 +151,7 @@ function find_differences($obj1, $obj2) {
     foreach ($obj2 as $item) {
         foreach ($item['subcategories'] as $sub) {
             if ($sub['subcategoryId'] === null) {
-                $additions[] = "Null subcategory in item with ID {$item['itemId']} is added";
+                $additions[] = new Difference($item['itemId'], null, null, "Null subcategory in item with ID {$item['itemId']} is added");
             }
         }
     }
@@ -156,12 +170,12 @@ function find_differences($obj1, $obj2) {
                 }
             }
             if ($found && $subcategoryId !== null && $prevItem['itemId'] !== $id2) {
-                $changes[] = "Subcategory with ID $subcategoryId moved from item with ID {$prevItem['itemId']} to item with ID $id2";
+                $changes[] = new Difference($id2, $subcategoryId, 'moved', "Subcategory with ID $subcategoryId moved from item with ID {$prevItem['itemId']} to item with ID $id2");
             }
         }
     }
 
-    return [
+    return (object)[
         'deletions' => $deletions,
         'changes' => $changes,
         'additions' => $additions,
@@ -175,19 +189,7 @@ function find_differences($obj1, $obj2) {
 
 $differences = find_differences($obj1, $obj2);
 
-echo "Deletions:\n";
-foreach ($differences['deletions'] as $difference) {
-    echo $difference . "\n";
-}
-
-echo "\nChanges:\n";
-foreach ($differences['changes'] as $difference) {
-    echo $difference . "\n";
-}
-
-echo "\nAdditions:\n";
-foreach ($differences['additions'] as $difference) {
-    echo $difference . "\n";
-}
-
+echo '<pre>';
+print_r($differences);
+echo '</pre>';
 ?>
