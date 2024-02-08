@@ -19,7 +19,9 @@ function addnew(){
   let foo = prompt('Type here');
   const main = document.getElementById('main-container');
   let div = document.createElement("div");
-  div.textContent = foo;
+  const divItem = document.createElement("div");
+  divItem.textContent = foo;
+  div.appendChild(divItem);
   div.classList.add('container');
 
 
