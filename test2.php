@@ -108,13 +108,13 @@ function find_differences($userId,$listId,$obj2) {
                 if ($sub1['subcategoryId'] === $sub2['subcategoryId']) {
                     $changed_attributes = [];
                     if ($sub1['subcategoryName'] !== $sub2['subcategoryName']) {
-                        $changed_attributes[] = "subcategoryName";
+                        $changed_attributes['subcategoryName'] = $sub2['subcategoryName'];
                     }
                     if ($sub1['subcategoryOrder'] !== $sub2['subcategoryOrder']) {
-                        $changed_attributes[] = "subcategoryOrder";
+                        $changed_attributes['subcategoryOrder'] = $sub2['subcategoryOrder'];
                     }
                     if (!empty($changed_attributes)) {
-                        $changes[] = new Difference($id1, $sub1['subcategoryId'], $changed_attributes, "Subcategory with ID {$sub1['subcategoryId']} in item with ID $id1 has changed in: " . implode(", ", $changed_attributes));
+                        $changes[] = new Difference($id1, $sub1['subcategoryId'], $changed_attributes, "Subcategory with ID {$sub1['subcategoryId']} in item with ID $id1 has changed");
                     }
                     $found = true;
                     break;
@@ -184,6 +184,7 @@ function updatemylist($userId, $listId, $obj2)
         }
     }
     var_dump($differences->changes);
+    
     // foreach ($differences->changes as $change) {
     //     $sql = "UPDATE Subcategories SET ";
     //     $params = array();
