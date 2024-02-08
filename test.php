@@ -110,6 +110,16 @@ $obj2 = [
         ]
     ],
     [
+        "itemId" => null,
+        "itemName" => "Dummy Task 1",
+        "subcategories" => [
+            ["subcategoryId" => null, "subcategoryName" => "Subcategory 3 (Not NULL)", "subcategoryOrder" => 1],
+            ["subcategoryId" => null, "subcategoryName" => "Subcategory 4 (Not NULL)", "subcategoryOrder" => 2],
+            ["subcategoryId" => null, "subcategoryName" => "Subcategory 5 (Not NULL)", "subcategoryOrder" => 3],
+            ["subcategoryId" => null, "subcategoryName" => "Subcategory 6 (Not NULL)", "subcategoryOrder" => 4]
+        ]
+    ],
+    [
         "itemId" => 6,
         "itemName" => "Dummy Task 2",
         "subcategories" => [
