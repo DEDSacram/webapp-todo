@@ -1,5 +1,5 @@
 <?php
-//include 'db.php';
+// include 'db.php';
 include 'endpoint.php';
 ini_set('display_startup_errors', 1);
 ini_set('display_errors', 1);
@@ -119,7 +119,6 @@ function getItemsInToDoList($listId, $userId) {
 
     $items = array_values($todoItems);
 
-
     
     $sql2 = "SELECT ListSubcategories.ListSubcategoryID, ListSubcategories.SubcategoryName
     FROM ListSubcategories
@@ -171,6 +170,165 @@ function addToDoList($listNames, $userId) {
     );
     send_response($result);
 }
+
+
+class Difference {
+    public $itemId;
+    public $subcategoryId;
+    public $attribute;
+    public $message;
+
+    public function __construct($itemId, $subcategoryId, $attribute, $message) {
+        $this->itemId = $itemId;
+        $this->subcategoryId = $subcategoryId;
+        $this->attribute = $attribute;
+        $this->message = $message;
+    }
+}
+
+function find_differences($obj2) {
+    $deletions = [];
+    $changes = [];
+    $additions = [];
+
+    // call to db create $obj1
+
+    $db = new Database();
+    //changed left join to right join to get all the items in the list including null ones in selection (special case)
+
+
+
+    $sql = "SELECT 
+        ToDoItems.ItemID, 
+        ToDoItems.ItemName, 
+        Subcategories.SubcategoryID, 
+        Subcategories.SubcategoryName, 
+        Subcategories.Order
+    FROM 
+        ToDoItems 
+    RIGHT JOIN 
+        Subcategories 
+    ON 
+        ToDoItems.ItemID = Subcategories.ItemID
+    INNER JOIN
+        ToDoLists
+    ON
+        ToDoItems.ListID = ToDoLists.ListID
+    WHERE 
+        ToDoItems.ListID = :listId AND ToDoLists.UserID = :userId
+    ORDER BY Subcategories.Order ASC";
+    $params = array(':listId' => $listId, ':userId' => $userId);
+    $stmt = $db->query($sql, $params);
+    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $todoItems = array();
+    $subcategories = array();
+
+    //format it nicely
+
+    foreach ($results as $row) {
+        $itemId = $row['ItemID'];
+        $itemName = $row['ItemName'];
+        $subcategoryId = $row['SubcategoryID'];
+        $subcategoryName = $row['SubcategoryName'];
+        $subcategoryOrder = $row['Order'];
+
+        if (!isset($todoItems[$itemId])) {
+            $todoItems[$itemId] = array(
+                'itemId' => $itemId,
+                'itemName' => $itemName,
+                'subcategories' => array()
+            );
+        }
+
+        $todoItems[$itemId]['subcategories'][] = array(
+            'subcategoryId' => $subcategoryId,
+            'subcategoryName' => $subcategoryName,
+            'subcategoryOrder' => $subcategoryOrder
+        );
+    }
+
+    $items = array_values($todoItems);
+    $db->close();
+
+
+    if (count($obj1) != count($obj2)) {
+        $deletions[] = new Difference(null, null, null, "Objects have different lengths");
+    }
+
+    for ($i = 0; $i < count($obj1); $i++) {
+        $id1 = $obj1[$i]['itemId'];
+        $found = false;
+        foreach ($obj2 as $item) {
+            if ($item['itemId'] === $id1) {
+                $found = true;
+                break;
+            }
+        }
+
+        if (!$found) {
+            $deletions[] = new Difference($id1, null, null, "Item with ID $id1 is deleted");
+            continue;
+        }
+
+        foreach ($obj1[$i]['subcategories'] as $sub1) {
+            $found = false;
+            foreach ($obj2[$i]['subcategories'] as $sub2) {
+                if ($sub1['subcategoryId'] === $sub2['subcategoryId']) {
+                    $changed_attributes = [];
+                    if ($sub1['subcategoryName'] !== $sub2['subcategoryName']) {
+                        $changed_attributes[] = "subcategoryName";
+                    }
+                    if ($sub1['subcategoryOrder'] !== $sub2['subcategoryOrder']) {
+                        $changed_attributes[] = "subcategoryOrder";
+                    }
+                    if (!empty($changed_attributes)) {
+                        $changes[] = new Difference($id1, $sub1['subcategoryId'], implode(", ", $changed_attributes), "Subcategory with ID {$sub1['subcategoryId']} in item with ID $id1 has changed in: " . implode(", ", $changed_attributes));
+                    }
+                    $found = true;
+                    break;
+                }
+            }
+            if (!$found && $sub1['subcategoryId'] !== null) {
+                $deletions[] = new Difference($id1, $sub1['subcategoryId'], null, "Subcategory with ID {$sub1['subcategoryId']} in item with ID $id1 is deleted");
+            }
+        }
+    }
+
+    foreach ($obj2 as $item) {
+        foreach ($item['subcategories'] as $sub) {
+            if ($sub['subcategoryId'] === null) {
+                $additions[] = new Difference($item['itemId'], null, null, "Null subcategory in item with ID {$item['itemId']} is added");
+            }
+        }
+    }
+
+    foreach ($obj2 as $item) {
+        $id2 = $item['itemId'];
+        foreach ($item['subcategories'] as $sub) {
+            $subcategoryId = $sub['subcategoryId'];
+            $found = false;
+            foreach ($obj1 as $prevItem) {
+                foreach ($prevItem['subcategories'] as $prevSub) {
+                    if ($prevSub['subcategoryId'] === $subcategoryId) {
+                        $found = true;
+                        break 2;
+                    }
+                }
+            }
+            if ($found && $subcategoryId !== null && $prevItem['itemId'] !== $id2) {
+                $changes[] = new Difference($id2, $subcategoryId, 'moved', "Subcategory with ID $subcategoryId moved from item with ID {$prevItem['itemId']} to item with ID $id2");
+            }
+        }
+    }
+
+    return (object)[
+        'deletions' => $deletions,
+        'changes' => $changes,
+        'additions' => $additions,
+    ];
+}
+
 
 function saveall($listId, $userId, $items) {
     $db = new Database();
