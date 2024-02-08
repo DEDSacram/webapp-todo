@@ -41,6 +41,15 @@ function find_differences($obj1, $obj2) {
         }
     }
 
+    // Identify null subcategory IDs in obj2 as additions
+    foreach ($obj2 as $item) {
+        foreach ($item['subcategories'] as $sub) {
+            if ($sub['subcategoryId'] === null) {
+                $additions[] = "Null subcategory in item with ID {$item['itemId']} is added";
+            }
+        }
+    }
+
     return [
         'deletions' => $deletions,
         'changes' => $changes,
@@ -84,7 +93,7 @@ $obj2 = [
         "itemId" => 6,
         "itemName" => "Dummy Task 2",
         "subcategories" => [
-            ["subcategoryId" => 15, "subcategoryName" => "Subcategory 5 (Not NULL)", "subcategoryOrder" => 1],
+            ["subcategoryId" => null, "subcategoryName" => "Subcategory 5 (Not NULL)", "subcategoryOrder" => 1],
             ["subcategoryId" => 20, "subcategoryName" => "Subcategory 6 (Not NULL)", "subcategoryOrder" => 2]
         ]
     ]
