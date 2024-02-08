@@ -1,5 +1,4 @@
 <?php
-
 function find_differences($obj1, $obj2) {
     $deletions = [];
     $changes = [];
@@ -50,12 +49,33 @@ function find_differences($obj1, $obj2) {
         }
     }
 
+    // Detect moved subcategories
+    foreach ($obj2 as $item) {
+        $id2 = $item['itemId'];
+        foreach ($item['subcategories'] as $sub) {
+            $subcategoryId = $sub['subcategoryId'];
+            $found = false;
+            foreach ($obj1 as $prevItem) {
+                foreach ($prevItem['subcategories'] as $prevSub) {
+                    if ($prevSub['subcategoryId'] === $subcategoryId) {
+                        $found = true;
+                        break 2;
+                    }
+                }
+            }
+            if ($found && $subcategoryId !== null && $prevItem['itemId'] !== $id2) {
+                $changes[] = "Subcategory with ID $subcategoryId moved from item with ID {$prevItem['itemId']} to item with ID $id2";
+            }
+        }
+    }
+
     return [
         'deletions' => $deletions,
         'changes' => $changes,
         'additions' => $additions,
     ];
 }
+
 
 // Sample objects
 $obj1 = [
@@ -94,6 +114,7 @@ $obj2 = [
         "itemName" => "Dummy Task 2",
         "subcategories" => [
             ["subcategoryId" => null, "subcategoryName" => "Subcategory 5 (Not NULL)", "subcategoryOrder" => 1],
+            ["subcategoryId" => 17, "subcategoryName" => "Subcategory 5 (Not NULL)", "subcategoryOrder" => 3],
             ["subcategoryId" => 20, "subcategoryName" => "Subcategory 6 (Not NULL)", "subcategoryOrder" => 2]
         ]
     ]
