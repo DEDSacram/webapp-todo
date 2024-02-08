@@ -185,32 +185,28 @@ function updatemylist($userId, $listId, $obj2)
     }
     var_dump($differences->changes);
     
-    // foreach ($differences->changes as $change) {
-    //     $sql = "UPDATE Subcategories SET ";
-    //     $params = array();
-    //     $setClause = false; // Flag to check if any attributes are being updated
-    //     if (strpos($change->attribute, "subcategoryName") !== false) {
-    //         $subcategoryName = $obj2[$change->itemId]['subcategories'][$change->subcategoryId]['subcategoryName'];
-    //         if ($subcategoryName !== null) {
-    //             $sql .= "SubcategoryName = :subcategoryName, ";
-    //             $params[':subcategoryName'] = $subcategoryName;
-    //             $setClause = true;
-    //         }
-    //     }
-    //     // Check if any attributes are being updated
-    //     if ($setClause) {
-    //         $sql = rtrim($sql, ', '); // Remove trailing comma
-    //         $sql .= " WHERE SubcategoryID = :subcategoryId";
-    //         $params[':subcategoryId'] = $change->subcategoryId;
+    foreach ($differences->changes as $change) {
+        $sql = "UPDATE Subcategories SET ";
+        $params = [];
+        foreach ($change->attribute as $key => $value) {
+            // my fault
+        if ($key === 'subcategoryOrder') {
+            $key = 'Order';
+            $sql .= "`$key` = :$key, ";
+            $params[":$key"] = $value;
+            }else{
+            $sql .= "$key = :$key, ";
+            echo $sql;
+            $params[":$key"] = $value;
+            }
 
-    //         // Debugging: Check the SQL query and params
-    //         echo "SQL: $sql\n";
-    //         echo "Params: ";
-    //         print_r($params);
-
-    //         $db->query($sql, $params);
-    //     }
-    // }
+            
+        }
+        $sql = rtrim($sql, ', ');
+        $sql .= " WHERE SubcategoryID = :subcategoryId";
+        $params[':subcategoryId'] = $change->subcategoryId;
+        $db->query($sql, $params);
+    }
 
     // ... rest of the code
 
