@@ -114,7 +114,7 @@ function find_differences($userId,$listId,$obj2) {
                         $changed_attributes[] = "subcategoryOrder";
                     }
                     if (!empty($changed_attributes)) {
-                        $changes[] = new Difference($id1, $sub1['subcategoryId'], implode(", ", $changed_attributes), "Subcategory with ID {$sub1['subcategoryId']} in item with ID $id1 has changed in: " . implode(", ", $changed_attributes));
+                        $changes[] = new Difference($id1, $sub1['subcategoryId'], $changed_attributes, "Subcategory with ID {$sub1['subcategoryId']} in item with ID $id1 has changed in: " . implode(", ", $changed_attributes));
                     }
                     $found = true;
                     break;
@@ -183,33 +183,33 @@ function updatemylist($userId, $listId, $obj2)
             $db->query($sql, $params);
         }
     }
+    var_dump($differences->changes);
+    // foreach ($differences->changes as $change) {
+    //     $sql = "UPDATE Subcategories SET ";
+    //     $params = array();
+    //     $setClause = false; // Flag to check if any attributes are being updated
+    //     if (strpos($change->attribute, "subcategoryName") !== false) {
+    //         $subcategoryName = $obj2[$change->itemId]['subcategories'][$change->subcategoryId]['subcategoryName'];
+    //         if ($subcategoryName !== null) {
+    //             $sql .= "SubcategoryName = :subcategoryName, ";
+    //             $params[':subcategoryName'] = $subcategoryName;
+    //             $setClause = true;
+    //         }
+    //     }
+    //     // Check if any attributes are being updated
+    //     if ($setClause) {
+    //         $sql = rtrim($sql, ', '); // Remove trailing comma
+    //         $sql .= " WHERE SubcategoryID = :subcategoryId";
+    //         $params[':subcategoryId'] = $change->subcategoryId;
 
-    foreach ($differences->changes as $change) {
-        $sql = "UPDATE Subcategories SET ";
-        $params = array();
-        $setClause = false; // Flag to check if any attributes are being updated
-        if (strpos($change->attribute, "subcategoryName") !== false) {
-            $subcategoryName = $obj2[$change->itemId]['subcategories'][$change->subcategoryId]['subcategoryName'];
-            if ($subcategoryName !== null) {
-                $sql .= "SubcategoryName = :subcategoryName, ";
-                $params[':subcategoryName'] = $subcategoryName;
-                $setClause = true;
-            }
-        }
-        // Check if any attributes are being updated
-        if ($setClause) {
-            $sql = rtrim($sql, ', '); // Remove trailing comma
-            $sql .= " WHERE SubcategoryID = :subcategoryId";
-            $params[':subcategoryId'] = $change->subcategoryId;
+    //         // Debugging: Check the SQL query and params
+    //         echo "SQL: $sql\n";
+    //         echo "Params: ";
+    //         print_r($params);
 
-            // Debugging: Check the SQL query and params
-            echo "SQL: $sql\n";
-            echo "Params: ";
-            print_r($params);
-
-            $db->query($sql, $params);
-        }
-    }
+    //         $db->query($sql, $params);
+    //     }
+    // }
 
     // ... rest of the code
 
@@ -223,7 +223,7 @@ $obj2 = [
         "itemId" => 5,
         "itemName" => "Dummy Task 1",
         "subcategories" => [
-            ["subcategoryId" => 13, "subcategoryName" => "Amongus", "subcategoryOrder" => 1],
+            ["subcategoryId" => 13, "subcategoryName" => "Amongus", "subcategoryOrder" => 2],
             ["subcategoryId" => 14, "subcategoryName" => "Subcategory 4 (Not NULL)", "subcategoryOrder" => 2],
             ["subcategoryId" => 17, "subcategoryName" => "Subcategory 5 (Not NULL)", "subcategoryOrder" => 3],
             ["subcategoryId" => 18, "subcategoryName" => "Subcategory 6 (Not NULL)", "subcategoryOrder" => 4]
