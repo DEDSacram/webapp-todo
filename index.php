@@ -133,7 +133,7 @@ Array.from(sidebar_selection).forEach(item => {
 Array.from(todoitem).forEach(item => {
   // Your code here
   let obj = {
-    itemId: parseInt(item.getAttribute("data-id")),
+    itemId: isNaN(parseInt(item.getAttribute("data-id"))) ? null : parseInt(item.getAttribute("data-id")),
     itemName: item.firstElementChild.textContent,
     subcategories: []
   };
@@ -143,7 +143,7 @@ Array.from(todoitem).forEach(item => {
 
   subcategories.forEach((subcategory, index) => {
     let subcategoryObj = {
-      subcategoryId: parseInt(subcategory.getAttribute("data-id")),
+      subcategoryId: isNaN(parseInt(subcategory.getAttribute("data-id"))) ? null : parseInt(subcategory.getAttribute("data-id")),
       subcategoryName: subcategory.textContent,
       subcategoryOrder: index
     };

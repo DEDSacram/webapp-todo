@@ -327,6 +327,10 @@ function updatemylist($userId, $listId, $obj2)
             'message' => 'No changes detected',
         ]);
     }
+    send_response([
+        'status' => 1,
+        'message' => $differences,
+    ]);
     $db = new Database();
     $db->beginTransaction();
     foreach ($differences->deletions as $deletion) {
@@ -367,6 +371,7 @@ function updatemylist($userId, $listId, $obj2)
 
 
 function saveall($listId, $userId, $data) {
+
    //save all in main container
     updatemylist($userId,$listId, $data['display']);
     // also save selection here

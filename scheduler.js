@@ -23,7 +23,7 @@ function addnew(){
   divItem.textContent = foo;
   div.appendChild(divItem);
   div.classList.add('container');
-
+  div.setAttribute('data-id', null); // Set data-id attribute to null
 
   div.addEventListener('dragover', e => {
     e.preventDefault()
@@ -36,6 +36,13 @@ function addnew(){
     } else {
       div.insertBefore(draggable, afterElement)
     }
+  })
+
+  div.addEventListener('drop', e => {
+    e.preventDefault()
+    draggable = document.querySelector('.dragging')
+    div.setAttribute('data-id', null); // Set data-id attribute to null
+ 
   })
 
   main.appendChild(div)
@@ -63,6 +70,7 @@ function createDrag(){
   div.textContent = foo;
   div.classList.add('draggable');
   div.draggable = true;
+  div.setAttribute('data-id', null); // Set data-id attribute to null
 
   div.addEventListener('dragstart', () => {
     div.classList.add('dragging')
