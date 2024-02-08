@@ -141,16 +141,15 @@ Array.from(todoitem).forEach(item => {
   let subcategories = Array.from(item.children);
   subcategories.shift(); // Remove first child
 
-  subcategories.forEach(subcategory => {
+  subcategories.forEach((subcategory, index) => {
     let subcategoryObj = {
       subcategoryId: parseInt(subcategory.getAttribute("data-id")),
       subcategoryName: subcategory.textContent,
-      subcategoryOrder: parseInt(subcategory.getAttribute("data-order"))
+      subcategoryOrder: index
     };
 
     (obj.subcategories).push(subcategoryObj);
   });
-
   (dataobj.display).push(obj);
 });
 console.log("data object")
