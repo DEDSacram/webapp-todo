@@ -75,21 +75,25 @@ $db->close();
 return $obj1;
 }
 
-function find_differences($userId,$listId,$obj2) {
+function find_differences($userId, $listId, $obj2) {
     $deletions = [];
     $changes = [];
     $additions = [];
 
-    // call to db create $obj1 // this is only todo items I will handle them separately
-    $obj1 = fetchmelist($userId,$listId);
+    // Call to the database to fetch the existing items
+    $obj1 = fetchmelist($userId, $listId);
 
+    // Check if the lengths of the objects are different
     if (count($obj1) != count($obj2)) {
         $deletions[] = new Difference(null, null, null, "Objects have different lengths");
     }
 
+    // Iterate through each item in obj1
     for ($i = 0; $i < count($obj1); $i++) {
         $id1 = $obj1[$i]['itemId'];
         $found = false;
+
+        // Check if the item exists in obj2
         foreach ($obj2 as $item) {
             if ($item['itemId'] === $id1) {
                 $found = true;
@@ -97,35 +101,44 @@ function find_differences($userId,$listId,$obj2) {
             }
         }
 
+        // If the item does not exist in obj2, consider it deleted
         if (!$found) {
             $deletions[] = new Difference($id1, null, null, "Item with ID $id1 is deleted");
             continue;
         }
 
+        // Compare subcategories of obj1 and obj2
         foreach ($obj1[$i]['subcategories'] as $sub1) {
             $found = false;
             foreach ($obj2[$i]['subcategories'] as $sub2) {
                 if ($sub1['subcategoryId'] === $sub2['subcategoryId']) {
                     $changed_attributes = [];
+
+                    // Check for changes in subcategory attributes
                     if ($sub1['subcategoryName'] !== $sub2['subcategoryName']) {
                         $changed_attributes['subcategoryName'] = $sub2['subcategoryName'];
                     }
                     if ($sub1['subcategoryOrder'] !== $sub2['subcategoryOrder']) {
                         $changed_attributes['subcategoryOrder'] = $sub2['subcategoryOrder'];
                     }
+
+                    // If there are changes, add them to the changes array
                     if (!empty($changed_attributes)) {
-                        $changes[] = new Difference($id1, $sub1['subcategoryId'], $changed_attributes, "Subcategory with ID {$sub1['subcategoryId']} in item with ID $id1 has changed");
+                        $changes[] = new Difference($id1, $sub1['subcategoryId'], (object) $changed_attributes, "Subcategory with ID {$sub1['subcategoryId']} in item with ID $id1 has changed");
                     }
                     $found = true;
                     break;
                 }
             }
+
+            // If subcategory is not found in obj2, consider it deleted
             if (!$found && $sub1['subcategoryId'] !== null) {
                 $deletions[] = new Difference($id1, $sub1['subcategoryId'], null, "Subcategory with ID {$sub1['subcategoryId']} in item with ID $id1 is deleted");
             }
         }
     }
 
+    // Check for additions of null subcategories in obj2
     foreach ($obj2 as $item) {
         foreach ($item['subcategories'] as $sub) {
             if ($sub['subcategoryId'] === null) {
@@ -134,6 +147,7 @@ function find_differences($userId,$listId,$obj2) {
         }
     }
 
+    // Check for subcategories moved to different items
     foreach ($obj2 as $item) {
         $id2 = $item['itemId'];
         foreach ($item['subcategories'] as $sub) {
@@ -148,14 +162,18 @@ function find_differences($userId,$listId,$obj2) {
                 }
             }
             if ($found && $subcategoryId !== null && $prevItem['itemId'] !== $id2) {
-                
-     
-                $changes[] = new Difference($id2, $subcategoryId, (object)['ItemID' => $id2], "Subcategory with ID $subcategoryId moved from item with ID {$prevItem['itemId']} to item with ID $id2");
+                // Remove the deletion entry for the moved subcategory
+                $foundIndex = array_search($subcategoryId, array_column($deletions, 'subcategoryId'));
+                if ($foundIndex !== false) {
+                    unset($deletions[$foundIndex]);
+                }
+                $changes[] = new Difference($id2, $subcategoryId, (object) ['ItemID' => $id2], "Subcategory with ID $subcategoryId moved from item with ID {$prevItem['itemId']} to item with ID $id2");
             }
         }
     }
 
-    return (object)[
+    // Return differences as an object
+    return (object) [
         'deletions' => $deletions,
         'changes' => $changes,
         'additions' => $additions,
