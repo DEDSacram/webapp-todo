@@ -161,8 +161,15 @@ function find_differences($userId,$listId,$obj2) {
 }
 
 
-function updatemylist($userId,$listId,$obj2){
-    $differences = find_differences($userId,$listId,$obj2);
+// public function query($sql, $params = []) {
+//     $stmt = $this->conn->prepare($sql);
+//     $stmt->execute($params);
+//     return $stmt;
+// }
+
+function updatemylist($userId, $listId, $obj2)
+{
+    $differences = find_differences($userId, $listId, $obj2);
     $db = new Database();
     $db->beginTransaction();
     foreach ($differences->deletions as $deletion) {
@@ -180,34 +187,35 @@ function updatemylist($userId,$listId,$obj2){
     foreach ($differences->changes as $change) {
         $sql = "UPDATE Subcategories SET ";
         $params = array();
+        $setClause = false; // Flag to check if any attributes are being updated
         if (strpos($change->attribute, "subcategoryName") !== false) {
-            $sql .= "SubcategoryName = :subcategoryName";
-            $params[':subcategoryName'] = $obj2[$change->itemId]['subcategories'][$change->subcategoryId]['subcategoryName'];
-        }
-        if (strpos($change->attribute, "subcategoryOrder") !== false) {
-            if (strpos($sql, "SubcategoryName") !== false) {
-                $sql .= ", ";
+            $subcategoryName = $obj2[$change->itemId]['subcategories'][$change->subcategoryId]['subcategoryName'];
+            if ($subcategoryName !== null) {
+                $sql .= "SubcategoryName = :subcategoryName, ";
+                $params[':subcategoryName'] = $subcategoryName;
+                $setClause = true;
             }
-            $sql .= "Order = :subcategoryOrder";
-            $params[':subcategoryOrder'] = $obj2[$change->itemId]['subcategories'][$change->subcategoryId]['subcategoryOrder'];
         }
-        $sql .= " WHERE SubcategoryID = :subcategoryId";
-        $params[':subcategoryId'] = $change->subcategoryId;
-        $db->query($sql, $params);
+        // Check if any attributes are being updated
+        if ($setClause) {
+            $sql = rtrim($sql, ', '); // Remove trailing comma
+            $sql .= " WHERE SubcategoryID = :subcategoryId";
+            $params[':subcategoryId'] = $change->subcategoryId;
+
+            // Debugging: Check the SQL query and params
+            echo "SQL: $sql\n";
+            echo "Params: ";
+            print_r($params);
+
+            $db->query($sql, $params);
+        }
     }
 
-    foreach ($differences->additions as $addition) {
-        $sql = "INSERT INTO Subcategories (ItemID, SubcategoryName, Order) VALUES (:itemId, :subcategoryName, :subcategoryOrder)";
-        $params = array(
-            ':itemId' => $addition->itemId,
-            ':subcategoryName' => $obj2[$addition->itemId]['subcategories'][0]['subcategoryName'],
-            ':subcategoryOrder' => $obj2[$addition->itemId]['subcategories'][0]['subcategoryOrder']
-        );
-        $db->query($sql, $params);
-    }
+    // ... rest of the code
+
     $db->commit();
-    $db->close();
 }
+
 
 
 $obj2 = [
@@ -215,7 +223,7 @@ $obj2 = [
         "itemId" => 5,
         "itemName" => "Dummy Task 1",
         "subcategories" => [
-            ["subcategoryId" => 13, "subcategoryName" => "Subcateory 3 (Not NULL)", "subcategoryOrder" => 1],
+            ["subcategoryId" => 13, "subcategoryName" => "Amongus", "subcategoryOrder" => 1],
             ["subcategoryId" => 14, "subcategoryName" => "Subcategory 4 (Not NULL)", "subcategoryOrder" => 2],
             ["subcategoryId" => 17, "subcategoryName" => "Subcategory 5 (Not NULL)", "subcategoryOrder" => 3],
             ["subcategoryId" => 18, "subcategoryName" => "Subcategory 6 (Not NULL)", "subcategoryOrder" => 4]

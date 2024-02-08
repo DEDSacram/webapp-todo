@@ -39,6 +39,14 @@ class Database {
         return $this->conn->lastInsertId();
     }
 
+    public function beginTransaction() {
+        $this->conn->beginTransaction();
+    }
+
+    public function commit() {
+        $this->conn->commit();
+    }
+
 }
 
 
