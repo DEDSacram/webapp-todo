@@ -283,8 +283,8 @@ function find_differences($userId, $listId, $obj2) {
             }
         }
     }
-
-    // Check for subcategories moved to different items
+    
+    // Check for subcategories moved to different items checkpoint
     foreach ($obj2 as $item) {
         $id2 = $item['itemId'];
         foreach ($item['subcategories'] as $sub) {
