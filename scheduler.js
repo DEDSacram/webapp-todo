@@ -2,6 +2,156 @@ function changecolors(){
     
 }
 
+function createButtons(div) {
+  // Create a div wrapper for the buttons
+  const buttonWrapper = document.createElement('div');
+  buttonWrapper.classList.add('button-wrapper');
+
+  // Create a button element for removing
+  const removeButton = document.createElement('button');
+  removeButton.textContent = 'X';
+  removeButton.classList.add('remove-button');
+  removeButton.addEventListener('click', () => {
+    div.remove();
+  });
+  buttonWrapper.appendChild(removeButton);
+
+  // Create a button element for changing text content
+  const changeTextButton = document.createElement('button');
+  changeTextButton.textContent = 'Change Text';
+  changeTextButton.classList.add('change-text-button');
+  changeTextButton.addEventListener('click', () => {
+    const newText = prompt('Enter new text:');
+    if (newText !== null) {
+      div.querySelector('p').textContent = newText;
+    }
+  });
+  buttonWrapper.appendChild(changeTextButton);
+
+  // Create a button element for marking as completed
+  const completeButton = document.createElement('button');
+  completeButton.textContent = 'Mark as Completed';
+  completeButton.classList.add('complete-button');
+  completeButton.addEventListener('click', () => {
+    div.classList.toggle('completed');
+  });
+  buttonWrapper.appendChild(completeButton);
+
+  // Append the button wrapper to the div
+  div.appendChild(buttonWrapper);
+}
+
+function createButtons_item(div) {
+  // Create a div wrapper for the buttons
+  const buttonWrapper = document.createElement('div');
+  buttonWrapper.classList.add('button-wrapper');
+
+  // Create a button element for removing
+  const removeButton = document.createElement('button');
+  removeButton.textContent = 'X';
+  removeButton.classList.add('remove-button');
+  removeButton.addEventListener('click', () => {
+    div.parentNode.remove();
+  });
+  buttonWrapper.appendChild(removeButton);
+
+  // Create a button element for changing text content
+  const changeTextButton = document.createElement('button');
+  changeTextButton.textContent = 'Change Text';
+  changeTextButton.classList.add('change-text-button');
+  changeTextButton.addEventListener('click', () => {
+    const newText = prompt('Enter new text:');
+    if (newText !== null) {
+      div.querySelector('p').textContent = newText;
+    }
+  });
+  buttonWrapper.appendChild(changeTextButton);
+  // Append the button wrapper to the div
+  div.appendChild(buttonWrapper);
+}
+
+function createdraggable_new(){
+const div = document.querySelector('.sidebar'); // sidebar
+let foo = prompt('Type here');
+if(foo == null && foo == ""){
+return;
+}
+let childdiv = document.createElement("div");
+childdiv.setAttribute('data-id', null); // Set data-id attribute to null for db
+
+childdiv.classList.add('draggable');
+childdiv.draggable = true;
+
+childdiv.addEventListener('dragstart', () => {
+childdiv.classList.add('dragging')
+})
+
+
+childdiv.addEventListener('dragend', () => {
+childdiv.classList.remove('dragging')
+})
+
+let p = document.createElement("p");
+p.textContent = foo;
+childdiv.appendChild(p);
+
+createButtons(childdiv);
+
+div.appendChild(childdiv);
+}
+function createdraggable(div,subcategory){
+let childdiv = document.createElement("div");
+childdiv.setAttribute('data-id', subcategory.subcategoryId); // Set data-id attribute
+childdiv.setAttribute('data-order', subcategory.subcategoryOrder); // Set data-order attribute
+
+childdiv.classList.add('draggable');
+childdiv.draggable = true;
+
+childdiv.addEventListener('dragstart', () => {
+childdiv.classList.add('dragging')
+})
+
+
+childdiv.addEventListener('dragend', () => {
+childdiv.classList.remove('dragging')
+})
+
+let p = document.createElement("p");
+p.textContent = subcategory.subcategoryName;
+childdiv.appendChild(p);
+
+createButtons(childdiv);
+
+div.appendChild(childdiv);
+}
+
+function createdraggable_sidebar(div,subcategory){
+let childdiv = document.createElement("div");
+childdiv.setAttribute('data-id', subcategory.ListSubcategoryID); // Set data-id attribute
+childdiv.classList.add('draggable');
+childdiv.draggable = true;
+
+childdiv.addEventListener('dragstart', () => {
+childdiv.classList.add('dragging')
+})
+
+
+childdiv.addEventListener('dragend', () => {
+childdiv.classList.remove('dragging')
+})
+
+let p = document.createElement("p");
+p.textContent = subcategory.SubcategoryName;
+childdiv.appendChild(p);
+
+createButtons(childdiv);
+
+div.appendChild(childdiv);
+}
+
+//draggables
+
+
 
 function toggleSidebar() {
   const sidebar = document.querySelector('.sidebar');
@@ -15,38 +165,85 @@ function toggleSidebar() {
   }
 }
 
+// function addnew(){
+  
+//   let foo = prompt('Type here');
+//   const main = document.getElementById('main-container');
+//   let div = document.createElement("div");
+//   const divItem = document.createElement("div");
+//   divItem.textContent = foo;
+//   div.appendChild(divItem);
+//   div.classList.add('container');
+//   div.setAttribute('data-id', null); // Set data-id attribute to null
+
+//   div.addEventListener('dragover', e => {
+//     e.preventDefault()
+//     const afterElement = getDragAfterElement(div, e.clientY)
+//     const draggable = document.querySelector('.dragging')
+    
+//     //check
+//     if (afterElement == null) {
+//       div.appendChild(draggable)
+//     } else {
+//       div.insertBefore(draggable, afterElement)
+//     }
+//   })
+
+//   div.addEventListener('drop', e => {
+//     e.preventDefault()
+//     draggable = document.querySelector('.dragging')
+//     if (!draggable.getAttribute('data-order')) {
+//       draggable.setAttribute('data-id', null); // Set data-id attribute to null
+//     }
+//   })
+
+//   main.appendChild(div)
+// }
+
 function addnew(){
   let foo = prompt('Type here');
+  if(foo == null || foo == ""){
+    return;
+  }
   const main = document.getElementById('main-container');
-  let div = document.createElement("div");
-  const divItem = document.createElement("div");
-  divItem.textContent = foo;
-  div.appendChild(divItem);
-  div.classList.add('container');
-  div.setAttribute('data-id', null); // Set data-id attribute to null
-
-  div.addEventListener('dragover', e => {
-    e.preventDefault()
-    const afterElement = getDragAfterElement(div, e.clientY)
-    const draggable = document.querySelector('.dragging')
+    let div = document.createElement("div");
+    div.setAttribute('data-id', null);
+    div.classList.add('container');
+  
     
-    //check
-    if (afterElement == null) {
-      div.appendChild(draggable)
-    } else {
-      div.insertBefore(draggable, afterElement)
-    }
-  })
+   
+    
+    let pTag = document.createElement("p");
+    pTag.textContent = foo;
+    let wrapperDiv = document.createElement("div");
+    wrapperDiv.appendChild(pTag);
+    createButtons_item(wrapperDiv);
+    div.appendChild(wrapperDiv);
+    
 
-  div.addEventListener('drop', e => {
-    e.preventDefault()
-    draggable = document.querySelector('.dragging')
-    if (!draggable.getAttribute('data-order')) {
-      draggable.setAttribute('data-id', null); // Set data-id attribute to null
-    }
-  })
+    div.addEventListener('dragover', e => {
+      e.preventDefault()
+      afterElement = getDragAfterElement(div, e.clientY)
+      draggable = document.querySelector('.dragging')
 
-  main.appendChild(div)
+      //check
+      if (afterElement == null) {
+        div.appendChild(draggable)
+      } else {
+        div.insertBefore(draggable, afterElement)
+      }
+    })
+
+    div.addEventListener('drop', e => {
+      e.preventDefault()
+      draggable = document.querySelector('.dragging')
+        if (!draggable.getAttribute('data-order')) {
+          draggable.setAttribute('data-id', null); // Set data-id attribute to null
+        }
+   
+    })
+    main.appendChild(div)
+
 }
 
 
@@ -62,23 +259,4 @@ function getDragAfterElement(container, y) {
       return closest
     }
   }, { offset: Number.NEGATIVE_INFINITY }).element
-}
-
-function createDrag(){
-  const sidebar = document.querySelector('.sidebar');
-  let foo = prompt('Type here');
-  let div = document.createElement("p");
-  div.textContent = foo;
-  div.classList.add('draggable');
-  div.draggable = true;
-  div.setAttribute('data-id', null); // Set data-id attribute to null for db
-
-  div.addEventListener('dragstart', () => {
-    div.classList.add('dragging')
-  })
-
-  div.addEventListener('dragend', () => {
-    div.classList.remove('dragging')
-  })
-  sidebar.appendChild(div);
 }

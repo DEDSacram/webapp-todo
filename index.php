@@ -52,7 +52,7 @@ ob_end_flush();
     <div id="manage-tasks" class="hidden">
       <button onclick="backToTodoLists()">Backto</button>
       <button onclick="addnew()" id="addtask">+</button>
-      <button onclick="createDrag()" id="addtaskdd">+</button>
+      <button onclick="createdraggable_new()" id="addtaskdd">+</button>
       <!-- These will be saved too, create an additional db -->
       <div class="container" id="sidebar-items">
       </div>
@@ -102,102 +102,85 @@ ob_end_flush();
   <script src="colorwheel.js"></script>
   <script>
 
-    function saveall(){
+    function saveall() {
       // all that have a data-id are from database will need to save what I got from the server on the server will need to check if all ids are owned by the user (could have been changed to destroy someones data)
       // I can save them on the browser or call to database gain
       // I am going to call the database again and do differenciation here javascript is easier to work with + in production setting I would not want to load the server uneccesarily
 
-let dataobj = {
-  selection: [],
-  display: []
-};
+      let dataobj = {
+        selection: [],
+        display: []
+      };
 
-let sidebar_selection = document.getElementById("sidebar-items").children;
+      let sidebar_selection = document.getElementById("sidebar-items").children;
 
-let maincontainer = document.getElementById("main-container");
-let todoitem = maincontainer.children;
+      let maincontainer = document.getElementById("main-container");
+      let todoitem = maincontainer.children;
 
+      Array.from(sidebar_selection).forEach(item => {
+        // Your code here
+        let obj = {
+          ListSubcategoryID: parseInt(item.getAttribute("data-id")),
+          SubcategoryName: item.querySelector('p').textContent
+        };
 
-Array.from(sidebar_selection).forEach(item => {
-  // Your code here
+        dataobj.selection.push(obj);
+      });
 
-  let obj = {
-    ListSubcategoryID: parseInt(item.getAttribute("data-id")),
-    SubcategoryName: item.textContent
-  };
+      Array.from(todoitem).forEach(item => {
+        // Your code here
+        let obj = {
+          itemId: isNaN(parseInt(item.getAttribute("data-id"))) ? null : parseInt(item.getAttribute("data-id")),
+          itemName: item.querySelector("p").textContent,
+          subcategories: []
+        };
 
-  (dataobj.selection).push(obj);
-});
+        let subcategories = Array.from(item.children);
+        subcategories.shift(); // Remove first child
 
+        subcategories.forEach((subcategory, index) => {
+          let subcategoryObj = {
+            subcategoryId: isNaN(parseInt(subcategory.getAttribute("data-id"))) ? null : parseInt(subcategory.getAttribute("data-id")),
+            subcategoryName: subcategory.querySelector('p').textContent,
+            subcategoryOrder: index
+          };
 
-Array.from(todoitem).forEach(item => {
-  // Your code here
-  let obj = {
-    itemId: isNaN(parseInt(item.getAttribute("data-id"))) ? null : parseInt(item.getAttribute("data-id")),
-    itemName: item.firstElementChild.textContent,
-    subcategories: []
-  };
+          obj.subcategories.push(subcategoryObj);
+        });
+        dataobj.display.push(obj);
+      });
 
-  let subcategories = Array.from(item.children);
-  subcategories.shift(); // Remove first child
+      console.log("data object");
+      console.log(dataobj);
 
-  subcategories.forEach((subcategory, index) => {
-    let subcategoryObj = {
-      subcategoryId: isNaN(parseInt(subcategory.getAttribute("data-id"))) ? null : parseInt(subcategory.getAttribute("data-id")),
-      subcategoryName: subcategory.textContent,
-      subcategoryOrder: index
-    };
+      fetch('/api/app.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ action: 'saveall', data: dataobj, ListID: sessionStorage.getItem('currentTodoListNumber') })
+      })
+        .then(response => response.json())
+        .then(data => {
+          // Handle the response data here
+          console.log(data);
+        })
+        .catch(error => {
+          // Handle any errors here
+          console.error(error);
+        });
 
-    (obj.subcategories).push(subcategoryObj);
-  });
-  (dataobj.display).push(obj);
-});
-console.log("data object")
-console.log(dataobj)
-fetch('/api/app.php', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({ action: 'saveall', data: dataobj, ListID: sessionStorage.getItem('currentTodoListNumber') })
-})
-  .then(response => response.json())
-  .then(data => {
-    // Handle the response data here
-    console.log(data);
-  })
-  .catch(error => {
-    // Handle any errors here
-    console.error(error);
-  });
-
-
-
-  maincontainer.innerHTML = "";
+      maincontainer.innerHTML = "";
     }
 
         // Create a <p> tag with class "draggable" and draggable set to true
     function dynamicallycreateallfromdb(dataobject) {
-      console.log(dataobject)
       //selection from sidebar
       const sidebarItemsContainer = document.getElementById("sidebar-items");
       sidebarItemsContainer.innerHTML = "";
       dataobject.selection.forEach(item => {
-        const p = document.createElement("p");
-        p.classList.add("draggable");
-        p.draggable = true;
-        p.textContent = item.SubcategoryName;
-        p.setAttribute("data-id", item.ListSubcategoryID); // Add data-id attribute
-
-        p.addEventListener('dragstart', () => {
-        p.classList.add('dragging')
-        })
-
-        p.addEventListener('dragend', () => {
-        p.classList.remove('dragging')
-        })
-
-        sidebarItemsContainer.appendChild(p);
+        console.log(item)
+        createdraggable_sidebar( sidebarItemsContainer,item)
       });
 
       //create todoitems and its subcategories
@@ -205,11 +188,18 @@ fetch('/api/app.php', {
     const main = document.getElementById('main-container');
     let div = document.createElement("div");
     div.setAttribute('data-id', item.itemId); // Set data-id attribute
-    const divItem = document.createElement("div");
-    divItem.textContent = item.itemName;
-    div.appendChild(divItem);
     div.classList.add('container');
-
+  
+    
+   
+    
+    let pTag = document.createElement("p");
+    pTag.textContent = item.itemName;
+    let wrapperDiv = document.createElement("div");
+    wrapperDiv.appendChild(pTag);
+    createButtons_item(wrapperDiv);
+    div.appendChild(wrapperDiv);
+    
 
     div.addEventListener('dragover', e => {
       e.preventDefault()
@@ -234,22 +224,12 @@ fetch('/api/app.php', {
    
     })
 
+        // Create a button element for removing
+
+
 
     item.subcategories.forEach(subcategory => {
-      let p = document.createElement("p");
-      p.setAttribute('data-id', subcategory.subcategoryId); // Set data-id attribute
-      p.setAttribute('data-order', subcategory.subcategoryOrder); // Set data-order attribute
-      p.textContent = subcategory.subcategoryName;
-      p.classList.add('draggable');
-      p.draggable = true;
-        p.addEventListener('dragstart', () => {
-      p.classList.add('dragging')
-    })
-
-    p.addEventListener('dragend', () => {
-      p.classList.remove('dragging')
-    })
-      div.appendChild(p);
+      createdraggable(div,subcategory)
         });
     
         main.appendChild(div)
