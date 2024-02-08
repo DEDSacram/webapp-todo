@@ -148,7 +148,9 @@ function find_differences($userId,$listId,$obj2) {
                 }
             }
             if ($found && $subcategoryId !== null && $prevItem['itemId'] !== $id2) {
-                $changes[] = new Difference($id2, $subcategoryId, 'moved', "Subcategory with ID $subcategoryId moved from item with ID {$prevItem['itemId']} to item with ID $id2");
+                
+     
+                $changes[] = new Difference($id2, $subcategoryId, (object)['ItemID' => $id2], "Subcategory with ID $subcategoryId moved from item with ID {$prevItem['itemId']} to item with ID $id2");
             }
         }
     }
@@ -222,8 +224,7 @@ $obj2 = [
         "subcategories" => [
             ["subcategoryId" => 13, "subcategoryName" => "Amongus", "subcategoryOrder" => 2],
             ["subcategoryId" => 14, "subcategoryName" => "Subcategory 4 (Not NULL)", "subcategoryOrder" => 2],
-            ["subcategoryId" => 17, "subcategoryName" => "Subcategory 5 (Not NULL)", "subcategoryOrder" => 3],
-            ["subcategoryId" => 18, "subcategoryName" => "Subcategory 6 (Not NULL)", "subcategoryOrder" => 4]
+            ["subcategoryId" => 17, "subcategoryName" => "Subcategory 5 (Not NULL)", "subcategoryOrder" => 3]
         ]
     ],
     [
@@ -231,7 +232,8 @@ $obj2 = [
         "itemName" => "Dummy Task 2",
         "subcategories" => [
             ["subcategoryId" => 19, "subcategoryName" => "Subcategory 5 (Not NULL)", "subcategoryOrder" => 1],
-            ["subcategoryId" => 20, "subcategoryName" => "Subcategory 6 (Not NULL)", "subcategoryOrder" => 2]
+            ["subcategoryId" => 20, "subcategoryName" => "Subcategory 6 (Not NULL)", "subcategoryOrder" => 2],
+            ["subcategoryId" => 18, "subcategoryName" => "Subcategory 6 (Not NULL)", "subcategoryOrder" => 4]
         ]
     ]
 ];
