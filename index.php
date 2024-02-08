@@ -55,9 +55,7 @@ ob_end_flush();
       <button onclick="createDrag()" id="addtaskdd">+</button>
       <!-- These will be saved too, create an additional db -->
       <div class="container" id="sidebar-items">
-            <!-- <p class="draggable" draggable="true">1</p>
-            <p class="draggable" draggable="true">2</p> -->
-        </div>
+      </div>
     </div>
     <div id="manage_todo_lists">
       <button onclick="addnewtodolist()">+</button>
@@ -109,69 +107,6 @@ ob_end_flush();
       // I can save them on the browser or call to database gain
       // I am going to call the database again and do differenciation here javascript is easier to work with + in production setting I would not want to load the server uneccesarily
 
-
-
-// {
-//   "selection": [
-//     {
-//       "ListSubcategoryID": 4,
-//       "SubcategoryName": "Test Subcategory 1"
-//     },
-//     {
-//       "ListSubcategoryID": 5,
-//       "SubcategoryName": "Test Subcategory 2"
-//     },
-//     {
-//       "ListSubcategoryID": 6,
-//       "SubcategoryName": "Test Subcategory 3"
-//     }
-//   ],
-//   "display": [
-//     {
-//       "itemId": 5,
-//       "itemName": "Dummy Task 1",
-//       "subcategories": [
-//         {
-//           "subcategoryId": 13,
-//           "subcategoryName": "Subcategory 3 (Not NULL)",
-//           "subcategoryOrder": 1
-//         },
-//         {
-//           "subcategoryId": 14,
-//           "subcategoryName": "Subcategory 4 (Not NULL)",
-//           "subcategoryOrder": 2
-//         },
-//         {
-//           "subcategoryId": 17,
-//           "subcategoryName": "Subcategory 5 (Not NULL)",
-//           "subcategoryOrder": 3
-//         },
-//         {
-//           "subcategoryId": 18,
-//           "subcategoryName": "Subcategory 6 (Not NULL)",
-//           "subcategoryOrder": 4
-//         }
-//       ]
-//     },
-//     {
-//       "itemId": 6,
-//       "itemName": "Dummy Task 2",
-//       "subcategories": [
-//         {
-//           "subcategoryId": 19,
-//           "subcategoryName": "Subcategory 5 (Not NULL)",
-//           "subcategoryOrder": 1
-//         },
-//         {
-//           "subcategoryId": 20,
-//           "subcategoryName": "Subcategory 6 (Not NULL)",
-//           "subcategoryOrder": 2
-//         }
-//       ]
-//     }
-//   ]
-// }
-
 let dataobj = {
   selection: [],
   display: []
@@ -179,14 +114,15 @@ let dataobj = {
 
 let sidebar_selection = document.getElementById("sidebar-items").children;
 
-let todoitem = document.getElementById("main-container").children;
+let maincontainer = document.getElementById("main-container");
+let todoitem = maincontainer.children;
 
 
 Array.from(sidebar_selection).forEach(item => {
   // Your code here
 
   let obj = {
-    ListSubcategoryID: item.getAttribute("data-id"),
+    ListSubcategoryID: parseInt(item.getAttribute("data-id")),
     SubcategoryName: item.textContent
   };
 
@@ -197,7 +133,7 @@ Array.from(sidebar_selection).forEach(item => {
 Array.from(todoitem).forEach(item => {
   // Your code here
   let obj = {
-    itemId: item.getAttribute("data-id"),
+    itemId: parseInt(item.getAttribute("data-id")),
     itemName: item.firstElementChild.textContent,
     subcategories: []
   };
@@ -205,12 +141,11 @@ Array.from(todoitem).forEach(item => {
   let subcategories = Array.from(item.children);
   subcategories.shift(); // Remove first child
 
-
   subcategories.forEach(subcategory => {
     let subcategoryObj = {
-      subcategoryId: subcategory.getAttribute("data-id"),
+      subcategoryId: parseInt(subcategory.getAttribute("data-id")),
       subcategoryName: subcategory.textContent,
-      subcategoryOrder: subcategory.getAttribute("data-order")
+      subcategoryOrder: parseInt(subcategory.getAttribute("data-order"))
     };
 
     (obj.subcategories).push(subcategoryObj);
@@ -220,24 +155,26 @@ Array.from(todoitem).forEach(item => {
 });
 console.log("data object")
 console.log(dataobj)
+fetch('/api/app.php', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({ action: 'saveall', data: dataobj, ListID: sessionStorage.getItem('currentTodoListNumber') })
+})
+  .then(response => response.json())
+  .then(data => {
+    // Handle the response data here
+    console.log(data);
+  })
+  .catch(error => {
+    // Handle any errors here
+    console.error(error);
+  });
 
 
 
-// todoitem.forEach(item => {
-//   // Your code here
-
-//     const dataId = item.getAttribute("data-id");
-
-
-//     console.log(dataId);
-// });
-
-
-console.log(selection,todoitem)
-
-
-
-
+  maincontainer.innerHTML = "";
     }
 
         // Create a <p> tag with class "draggable" and draggable set to true

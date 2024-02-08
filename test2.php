@@ -1,4 +1,3 @@
-
 <?php
 include './api/db.php';
 
@@ -181,12 +180,6 @@ function find_differences($userId, $listId, $obj2) {
 }
 
 
-// public function query($sql, $params = []) {
-//     $stmt = $this->conn->prepare($sql);
-//     $stmt->execute($params);
-//     return $stmt;
-// }
-
 function updatemylist($userId, $listId, $obj2)
 {
     $differences = find_differences($userId, $listId, $obj2);
@@ -203,24 +196,20 @@ function updatemylist($userId, $listId, $obj2)
             $db->query($sql, $params);
         }
     }
-    var_dump($differences->changes);
     
     foreach ($differences->changes as $change) {
         $sql = "UPDATE Subcategories SET ";
         $params = [];
         foreach ($change->attribute as $key => $value) {
             // my fault
-        if ($key === 'subcategoryOrder') {
-            $key = 'Order';
-            $sql .= "`$key` = :$key, ";
-            $params[":$key"] = $value;
-            }else{
-            $sql .= "$key = :$key, ";
-            echo $sql;
-            $params[":$key"] = $value;
+            if ($key === 'subcategoryOrder') {
+                $key = 'Order';
+                $sql .= "`$key` = :$key, ";
+                $params[":$key"] = $value;
+            } else {
+                $sql .= "$key = :$key, ";
+                $params[":$key"] = $value;
             }
-
-            
         }
         $sql = rtrim($sql, ', ');
         $sql .= " WHERE SubcategoryID = :subcategoryId";
@@ -228,44 +217,43 @@ function updatemylist($userId, $listId, $obj2)
         $db->query($sql, $params);
     }
 
-    // ... rest of the code
 
     $db->commit();
 }
 
 
 
-$obj2 = [
-    [
-        "itemId" => 5,
-        "itemName" => "Dummy Task 1",
-        "subcategories" => [
-            ["subcategoryId" => 13, "subcategoryName" => "Amongus", "subcategoryOrder" => 2],
-            ["subcategoryId" => 14, "subcategoryName" => "Subcategory 4 (Not NULL)", "subcategoryOrder" => 2],
-            ["subcategoryId" => 17, "subcategoryName" => "Subcategory 5 (Not NULL)", "subcategoryOrder" => 3]
-        ]
-    ],
-    [
-        "itemId" => 6,
-        "itemName" => "Dummy Task 2",
-        "subcategories" => [
-            ["subcategoryId" => 19, "subcategoryName" => "Subcategory 5 (Not NULL)", "subcategoryOrder" => 1],
-            ["subcategoryId" => 20, "subcategoryName" => "Subcategory 6 (Not NULL)", "subcategoryOrder" => 2],
-            ["subcategoryId" => 18, "subcategoryName" => "Subcategory 6 (Not NULL)", "subcategoryOrder" => 4]
-        ]
-    ]
-];
+// $obj2 = [
+//     [
+//         "itemId" => 5,
+//         "itemName" => "Dummy Task 1",
+//         "subcategories" => [
+//             ["subcategoryId" => 13, "subcategoryName" => "Amongus", "subcategoryOrder" => 2],
+//             ["subcategoryId" => 14, "subcategoryName" => "Subcategory 4 (Not NULL)", "subcategoryOrder" => 2],
+//             ["subcategoryId" => 17, "subcategoryName" => "Subcategory 5 (Not NULL)", "subcategoryOrder" => 3]
+//         ]
+//     ],
+//     [
+//         "itemId" => 6,
+//         "itemName" => "Dummy Task 2",
+//         "subcategories" => [
+//             ["subcategoryId" => 19, "subcategoryName" => "Subcategory 5 (Not NULL)", "subcategoryOrder" => 1],
+//             ["subcategoryId" => 20, "subcategoryName" => "Subcategory 6 (Not NULL)", "subcategoryOrder" => 2],
+//             ["subcategoryId" => 18, "subcategoryName" => "Subcategory 6 (Not NULL)", "subcategoryOrder" => 4]
+//         ]
+//     ]
+// ];
 
 
 
-$differences = find_differences(6,50,$obj2);
+// $differences = find_differences(6,50,$obj2);
 
-echo '<pre>';
-print_r($differences);
-echo '</pre>';
+// echo '<pre>';
+// print_r($differences);
+// echo '</pre>';
 
 
-updatemylist(6,50,$obj2);
-echo "Updated";
+// updatemylist(6,50,$obj2);
+// echo "Updated";
 
 ?>

@@ -1,36 +1,5 @@
 <?php
 
-
-//test all
-// $obj2 = [
-//     [
-//         "itemId" => 1,
-//         "itemName" => "Item 1",
-//         "subcategories" => [
-//             ["subcategoryId" => 11, "subcategoryName" => "Subcategory 1 for Item 1", "subcategoryOrder" => 1],
-//             ["subcategoryId" => 12, "subcategoryName" => "Subcategory 2 for Item 1", "subcategoryOrder" => 2],
-//             ["subcategoryId" => 21, "subcategoryName" => "Subcategory 1 for Item 2", "subcategoryOrder" => 1],
-//         ]
-//     ],
-//     [
-//         "itemId" => 2,
-//         "itemName" => "Item 2",
-//         "subcategories" => [
-            
-//             ["subcategoryId" => 22, "subcategoryName" => "Subcategory 2 for Item 2", "subcategoryOrder" => 2]
-//         ]
-//     ],
-//     [
-//         "itemId" => 3,
-//         "itemName" => "Item 3",
-//         "subcategories" => [
-//             ["subcategoryId" => 31, "subcategoryName" => "Subcategory 1 for Item 3", "subcategoryOrder" => 1],
-//             ["subcategoryId" => null, "subcategoryName" => "Subcategory 2 for Item 3", "subcategoryOrder" => 2],
-//             ["subcategoryId" => 33, "subcategoryName" => "New Subcategory for Item 3", "subcategoryOrder" => 3]
-//         ]
-//     ]
-// ];
-
 $obj1 = [
     [
         "itemId" => 1,
