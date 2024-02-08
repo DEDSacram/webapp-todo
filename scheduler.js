@@ -41,8 +41,9 @@ function addnew(){
   div.addEventListener('drop', e => {
     e.preventDefault()
     draggable = document.querySelector('.dragging')
-    div.setAttribute('data-id', null); // Set data-id attribute to null
- 
+    if (!draggable.getAttribute('data-order')) {
+      draggable.setAttribute('data-id', null); // Set data-id attribute to null
+    }
   })
 
   main.appendChild(div)
@@ -70,7 +71,7 @@ function createDrag(){
   div.textContent = foo;
   div.classList.add('draggable');
   div.draggable = true;
-  div.setAttribute('data-id', null); // Set data-id attribute to null
+  div.setAttribute('data-id', null); // Set data-id attribute to null for db
 
   div.addEventListener('dragstart', () => {
     div.classList.add('dragging')

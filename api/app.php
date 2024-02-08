@@ -333,6 +333,19 @@ function updatemylist($userId, $listId, $obj2)
     ]);
     $db = new Database();
     $db->beginTransaction();
+
+    
+    foreach ($differences->additions as $addition) {
+        $sql = "INSERT INTO Subcategories (ItemID, SubcategoryName, `Order`) VALUES (:itemId, :subcategoryName, :subcategoryOrder)";
+        $params = array(
+            ':itemId' => $addition->itemId,
+            ':subcategoryName' => $addition->attribute->subcategoryName,
+            ':subcategoryOrder' => $addition->attribute->subcategoryOrder,
+        );
+        $db->query($sql, $params);
+    }
+
+    
     foreach ($differences->deletions as $deletion) {
         if ($deletion->subcategoryId === null) {
             $sql = "DELETE FROM ToDoItems WHERE ItemID = :itemId";

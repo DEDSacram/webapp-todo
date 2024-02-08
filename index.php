@@ -228,7 +228,8 @@ fetch('/api/app.php', {
       e.preventDefault()
       draggable = document.querySelector('.dragging')
         if (!draggable.getAttribute('data-order')) {
-          draggable.removeAttribute('data-id');
+          console.log('no data-order')
+          draggable.setAttribute('data-id', null); // Set data-id attribute to null
         }
    
     })
