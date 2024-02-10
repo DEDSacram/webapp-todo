@@ -317,37 +317,6 @@ function find_differences($userId, $listId, $obj2) {
         }
     }
 
- 
-    
-
-    
-
-    
-    // Check for subcategories moved to different items checkpoint
-    // foreach ($obj2 as $item) {
-    //     $id2 = $item['itemId'];
-    //     foreach ($item['subcategories'] as $sub) {
-    //         $subcategoryId = $sub['subcategoryId'];
-    //         $found = false;
-    //         foreach ($obj1 as $prevItem) {
-    //             foreach ($prevItem['subcategories'] as $prevSub) {
-    //                 if ($prevSub['subcategoryId'] === $subcategoryId) {
-    //                     $found = true;
-    //                     break 2;
-    //                 }
-    //             }
-    //         }
-    //         if ($found && $subcategoryId !== null && $prevItem['itemId'] !== $id2) {
-    //             // Remove the deletion entry for the moved subcategory
-    //             $foundIndex = array_search($subcategoryId, array_column($deletions, 'subcategoryId'));
-    //             if ($foundIndex !== false) {
-    //                 unset($deletions[$foundIndex]);
-    //             }
-    //             $changes[] = new Difference($id2, $subcategoryId, (object) ['ItemID' => $id2], "Subcategory with ID $subcategoryId moved from item with ID {$prevItem['itemId']} to item with ID $id2");
-    //         }
-    //     }
-    // }
-
         // also ref
     foreach ($obj2 as &$item) {
         $id2 = $item['itemId'];
@@ -387,6 +356,10 @@ function find_differences($userId, $listId, $obj2) {
 
 function updatemylist($userId, $listId, $obj2)
 {
+    send_response([
+        'status' => 15,
+        'message' => $obj2,
+    ]);
     $differences = find_differences($userId, $listId, $obj2);
     if (empty($differences->deletions) && empty($differences->changes) && empty($differences->additions)) {
         send_response([
