@@ -399,17 +399,7 @@ function updatemylist($userId, $listId, $obj2)
     }
 
     
-    foreach ($differences->deletions as $deletion) {
-        if ($deletion->subcategoryId === null) {
-            $sql = "DELETE FROM ToDoItems WHERE ItemID = :itemId";
-            $params = array(':itemId' => $deletion->itemId);
-            $db->query($sql, $params);
-        } else {
-            $sql = "DELETE FROM Subcategories WHERE SubcategoryID = :subcategoryId";
-            $params = array(':subcategoryId' => $deletion->subcategoryId);
-            $db->query($sql, $params);
-        }
-    }
+
     
     foreach ($differences->changes as $change) {
         $sql = "UPDATE Subcategories SET ";
@@ -429,6 +419,23 @@ function updatemylist($userId, $listId, $obj2)
         $sql .= " WHERE SubcategoryID = :subcategoryId";
         $params[':subcategoryId'] = $change->subcategoryId;
         $db->query($sql, $params);
+    }
+
+    foreach ($differences->deletions as $deletion) {
+        if ($deletion->subcategoryId === null) {
+            // delete all sssociated subcategories
+            $sql = "DELETE FROM Subcategories WHERE ItemID = :itemId";
+            $params = array(':itemId' => $deletion->itemId);
+            $db->query($sql, $params);
+            
+            $sql = "DELETE FROM ToDoItems WHERE ItemID = :itemId";
+            $params = array(':itemId' => $deletion->itemId);
+            $db->query($sql, $params);
+        } else {
+            $sql = "DELETE FROM Subcategories WHERE SubcategoryID = :subcategoryId";
+            $params = array(':subcategoryId' => $deletion->subcategoryId);
+            $db->query($sql, $params);
+        }
     }
 
 

@@ -162,7 +162,6 @@ ob_end_flush();
       })
         .then(response => response.json())
         .then(data => {
-          // Handle the response data here
           console.log(data);
         })
         .catch(error => {
@@ -179,7 +178,6 @@ ob_end_flush();
       const sidebarItemsContainer = document.getElementById("sidebar-items");
       sidebarItemsContainer.innerHTML = "";
       dataobject.selection.forEach(item => {
-        console.log(item)
         createdraggable_sidebar( sidebarItemsContainer,item)
       });
 
@@ -218,7 +216,6 @@ ob_end_flush();
       e.preventDefault()
       draggable = document.querySelector('.dragging')
         if (!draggable.getAttribute('data-order')) {
-          console.log('no data-order')
           draggable.setAttribute('data-id', null); // Set data-id attribute to null
         }
    
@@ -291,6 +288,8 @@ ob_end_flush();
         })
         .then(response => response.json())
         .then(data => {
+          console.log("before")
+          console.log(data)
           dynamicallycreateallfromdb(data);
           sessionStorage.setItem("currentTodoListNumber", this.getAttribute("data-id"));
         });
