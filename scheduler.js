@@ -165,41 +165,6 @@ function toggleSidebar() {
   }
 }
 
-// function addnew(){
-  
-//   let foo = prompt('Type here');
-//   const main = document.getElementById('main-container');
-//   let div = document.createElement("div");
-//   const divItem = document.createElement("div");
-//   divItem.textContent = foo;
-//   div.appendChild(divItem);
-//   div.classList.add('container');
-//   div.setAttribute('data-id', null); // Set data-id attribute to null
-
-//   div.addEventListener('dragover', e => {
-//     e.preventDefault()
-//     const afterElement = getDragAfterElement(div, e.clientY)
-//     const draggable = document.querySelector('.dragging')
-    
-//     //check
-//     if (afterElement == null) {
-//       div.appendChild(draggable)
-//     } else {
-//       div.insertBefore(draggable, afterElement)
-//     }
-//   })
-
-//   div.addEventListener('drop', e => {
-//     e.preventDefault()
-//     draggable = document.querySelector('.dragging')
-//     if (!draggable.getAttribute('data-order')) {
-//       draggable.setAttribute('data-id', null); // Set data-id attribute to null
-//     }
-//   })
-
-//   main.appendChild(div)
-// }
-
 function addnew(){
   let foo = prompt('Type here');
   if(foo == null || foo == ""){
