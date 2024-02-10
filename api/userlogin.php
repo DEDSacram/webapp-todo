@@ -167,6 +167,7 @@ switch ($data['action']) {
     case 'destroysession':
         session_start();
         session_destroy();
+        setcookie('rememberme', '', 1);
         send_response([
             'status' => 1,
             'message' => 'Odhlášení úspěšné',
