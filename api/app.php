@@ -317,6 +317,17 @@ function find_differences($userId, $listId, $obj2) {
 
             $changed_attributes = [];
             foreach ($obj1 as $prevItem) {
+                if ($prevItem['itemId'] === $id2) {
+                    $changed_attributes_item = [];
+                    // Check for changes in item attributes
+                    if ($prevItem['itemName'] != $item['itemName']) {
+                        $changed_attributes_item['ItemName'] = $item['itemName'];
+                    }
+                    if (!empty($changed_attributes_item)) {
+                        $changes[] = new Difference($id2, null, (object) $changed_attributes_item, "Item with ID $id2 has changed" . implode(", ", $changed_attributes_item));
+                    }
+                 }
+
                 foreach ($prevItem['subcategories'] as $prevSub) {
                     if ($prevSub['subcategoryId'] === $sub['subcategoryId']) {
                         
@@ -402,6 +413,18 @@ function updatemylist($userId, $listId, $obj2)
     // new todo-items dont have an id this causes problems when changing the subcatogories
     // need to get it the id from additions and change differences acoordingly
     foreach ($differences->changes as $change) {
+        // update item attributes
+        if($change->subcategoryId === null){
+            $sql = "UPDATE ToDoItems SET ItemName = :itemName WHERE ItemID = :itemId";
+            $params = array(
+                ':itemName' => $change->attribute->ItemName,
+                ':itemId' => $change->itemId,
+            );
+            $db->query($sql, $params);
+            continue;
+        }
+
+
         $sql = "UPDATE Subcategories SET ";
         $params = [];
         foreach ($change->attribute as $key => $value) {
