@@ -308,15 +308,29 @@ function find_differences($userId, $listId, $obj2) {
         }
     }
 
-        // also ref
+        // Check for changes in subcategories
     foreach ($obj2 as &$item) {
         $id2 = $item['itemId'];
         foreach ($item['subcategories'] as $sub) {
             $subcategoryId = $sub['subcategoryId'];
             $found = false;
+
+            $changed_attributes = [];
             foreach ($obj1 as $prevItem) {
                 foreach ($prevItem['subcategories'] as $prevSub) {
-                    if ($prevSub['subcategoryId'] === $subcategoryId) {
+                    if ($prevSub['subcategoryId'] === $sub['subcategoryId']) {
+                        
+
+                        // Check for changes in subcategory attributes
+                        if ($prevSub['subcategoryName'] != $sub['subcategoryName']) {
+                            $changed_attributes['subcategoryName'] = $sub['subcategoryName'];
+                        }
+                        if ($prevSub['subcategoryOrder'] != $sub['subcategoryOrder']) {
+                            $changed_attributes['subcategoryOrder'] = $sub['subcategoryOrder'];
+                        }
+                        if (!empty($changed_attributes)) {
+                            $changes[] = new Difference($id2, $subcategoryId, $changed_attributes, "Subcategory with ID $subcategoryId has changed" . implode(", ", $changed_attributes));
+                        }
                         $found = true;
                         break 2;
                     }
@@ -329,13 +343,13 @@ function find_differences($userId, $listId, $obj2) {
                 if ($foundIndex !== false) {
                     unset($deletions[$foundIndex]);
                 }
-       
+                // change id of todo-item
                 $changes[] = new Difference($id2, $subcategoryId, (object) ['ItemID' => $id2],null, "Subcategory with ID $subcategoryId moved from item with ID {$prevItem['itemId']} to item with ID $id2");
     
             }
         }
     }
-  
+
 
     // Return differences as an object
     return (object) [
@@ -356,7 +370,6 @@ function updatemylist($userId, $listId, $obj2)
             'message' => 'No changes detected',
         ]);
     }
-   
 
     $db = new Database();
     $db->beginTransaction();
@@ -407,6 +420,8 @@ function updatemylist($userId, $listId, $obj2)
         $params[':subcategoryId'] = $change->subcategoryId;
         $db->query($sql, $params);
     }
+
+    
 
     foreach ($differences->deletions as $deletion) {
         if ($deletion->subcategoryId === null) {
