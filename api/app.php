@@ -399,8 +399,9 @@ function updatemylist($userId, $listId, $obj2)
     }
 
     
-
-    
+    // look into
+    // new todo-items dont have an id this causes problems when changing the subcatogories
+    // need to get it the id from additions and change differences acoordingly
     foreach ($differences->changes as $change) {
         $sql = "UPDATE Subcategories SET ";
         $params = [];
