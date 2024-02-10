@@ -356,10 +356,10 @@ function find_differences($userId, $listId, $obj2) {
 
 function updatemylist($userId, $listId, $obj2)
 {
-    send_response([
-        'status' => 15,
-        'message' => $obj2,
-    ]);
+    // send_response([
+    //     'status' => 15,
+    //     'message' => $obj2,
+    // ]);
     $differences = find_differences($userId, $listId, $obj2);
     if (empty($differences->deletions) && empty($differences->changes) && empty($differences->additions)) {
         send_response([
