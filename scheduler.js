@@ -28,14 +28,14 @@ function createButtons(div) {
   });
   buttonWrapper.appendChild(changeTextButton);
 
-  // Create a button element for marking as completed
-  const completeButton = document.createElement('button');
-  completeButton.textContent = 'Mark as Completed';
-  completeButton.classList.add('complete-button');
-  completeButton.addEventListener('click', () => {
-    div.classList.toggle('completed');
-  });
-  buttonWrapper.appendChild(completeButton);
+  // // Create a button element for marking as completed
+  // const completeButton = document.createElement('button');
+  // completeButton.textContent = 'Mark as Completed';
+  // completeButton.classList.add('complete-button');
+  // completeButton.addEventListener('click', () => {
+  //   div.classList.toggle('completed');
+  // });
+  // buttonWrapper.appendChild(completeButton);
 
   // Append the button wrapper to the div
   div.appendChild(buttonWrapper);
