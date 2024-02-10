@@ -297,19 +297,10 @@ function find_differences($userId, $listId, $obj2) {
             $found = false;
             foreach ($obj2Item['subcategories'] as $sub2) { // Use the corresponding item from obj2
                 if ($sub1['subcategoryId'] === $sub2['subcategoryId']) {
-                    $changed_attributes = [];
-    
-                    // Check for changes in subcategory attributes
-                    if ($sub1['subcategoryName'] !== $sub2['subcategoryName']) {
-                        $changed_attributes['subcategoryName'] = $sub2['subcategoryName'];
-                    }
-                    // Continue your comparison logic here...
-    
                     $found = true;
                     break;
                 }
             }
-    
             // If the subcategory does not exist in obj2, consider it deleted
             if (!$found) {
                 $deletions[] = new Difference($id1, $sub1['subcategoryId'], null, "Subcategory with ID {$sub1['subcategoryId']} is deleted");
@@ -338,7 +329,8 @@ function find_differences($userId, $listId, $obj2) {
                 if ($foundIndex !== false) {
                     unset($deletions[$foundIndex]);
                 }
-                $changes[] = new Difference($id2, $subcategoryId, (object) ['ItemID' => $id2], "Subcategory with ID $subcategoryId moved from item with ID {$prevItem['itemId']} to item with ID $id2");
+       
+                $changes[] = new Difference($id2, $subcategoryId, (object) ['ItemID' => $id2],null, "Subcategory with ID $subcategoryId moved from item with ID {$prevItem['itemId']} to item with ID $id2");
     
             }
         }
@@ -356,10 +348,7 @@ function find_differences($userId, $listId, $obj2) {
 
 function updatemylist($userId, $listId, $obj2)
 {
-    // send_response([
-    //     'status' => 15,
-    //     'message' => $obj2,
-    // ]);
+
     $differences = find_differences($userId, $listId, $obj2);
     if (empty($differences->deletions) && empty($differences->changes) && empty($differences->additions)) {
         send_response([
@@ -367,6 +356,7 @@ function updatemylist($userId, $listId, $obj2)
             'message' => 'No changes detected',
         ]);
     }
+   
 
     $db = new Database();
     $db->beginTransaction();
