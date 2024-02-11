@@ -290,10 +290,10 @@ ob_end_flush();
         const child = todoListsContainer.children[i];
         // check if you should break by getting into ones that are already in the db
         const listId = child.getAttribute("data-id");
-        if (child.getAttribute("data-id-new") !== null) {
+        if (child.getAttribute("data-id-new") != null) {
           newones.push(child); 
           newonesnames.push(child.textContent); // these will be sent out as additions
-          return
+          continue;
         }
         checkoldones.push({
           listId: listId,
@@ -303,17 +303,23 @@ ob_end_flush();
 
 
 
-
-
+  
 // Call to savenew_or_update
-let saveFormData = new FormData();
-saveFormData.append("action", "savenew_or_update");
-saveFormData.append("ListID", listId);
-saveFormData.append("ListNameArray", JSON.stringify(newonesnames));
-saveFormData.append("ListNameArrayOld", JSON.stringify(checkoldones));
+let saveData = {
+  action: "savenew_or_update",
+  ListID: listId,
+  ListNameArray: newonesnames,
+  ListNameArrayOld: checkoldones
+};
+
+console.log(saveData);
+
 fetch(window.location.origin + "/api/app.php", {
   method: "POST",
-  body: saveFormData,
+  body: JSON.stringify(saveData),
+  headers: {
+    "Content-Type": "application/json"
+  },
   credentials: 'include' // Include cookies in the request
 })
 .then(response => response.json())
@@ -328,20 +334,20 @@ fetch(window.location.origin + "/api/app.php", {
 
    
 // get list of tasks
-let formData = new FormData();
-formData.append("action", "getitemsintodolist");
-formData.append("ListID", listId);
-fetch(window.location.origin + "/api/app.php", {
-  method: "POST",
-  body: formData,
-  credentials: 'include' // Include cookies in the request
-})
-.then(response => response.json())
-.then(data => {
-  console.log(data)
-  dynamicallycreateallfromdb(data);
-  sessionStorage.setItem("currentTodoListNumber", this.getAttribute("data-id"));
-});
+// let formData = new FormData();
+// formData.append("action", "getitemsintodolist");
+// formData.append("ListID", listId);
+// fetch(window.location.origin + "/api/app.php", {
+//   method: "POST",
+//   body: formData,
+//   credentials: 'include' // Include cookies in the request
+// })
+// .then(response => response.json())
+// .then(data => {
+//   console.log(data)
+//   dynamicallycreateallfromdb(data);
+//   sessionStorage.setItem("currentTodoListNumber", this.getAttribute("data-id"));
+// });
 
 
 

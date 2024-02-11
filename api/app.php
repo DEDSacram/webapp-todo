@@ -25,10 +25,54 @@ function getToDoLists($userId) {
 
 function savenew_or_update($userId, $data) {
     $listId = $data['ListID'];
-    if($data['ListNameArray'] != null){
+
+    if (!empty($data['ListNameArray'])) {
         $listNames = $data['ListNameArray'];
         addToDoList($listNames, $userId);
     }
+
+
+    $db = new Database();
+    $sql = "SELECT `ListID`, `ListName` FROM `ToDoLists` WHERE `UserID` = :userId";
+    $params = array(':userId' => $userId);
+    $stmt = $db->query($sql, $params);
+    $todoLists = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $db->close();
+    // check from old
+
+    if ($data['ListNameArrayOld'] != null) {
+        $listNamesOld = $data['ListNameArrayOld'];
+        $db = new Database();
+        foreach ($listNamesOld as $list) {
+            $listId = $list['listId'];
+            $listName = $list['textContent'];
+
+            // Check if $listId is not found in $listNamesOld
+            $listIdFound = false;
+            foreach ($todoLists as $todoList) {
+                if ($todoList['ListID'] == $listId) {
+                    $listIdFound = true;
+                    break;
+                }
+            }
+
+            if (!$listIdFound) {
+                // $listId is not found in $listNamesOld, consider it as deleted
+                $sql = "DELETE FROM `ToDoLists` WHERE `ListID` = :listId AND `UserID` = :userId";
+                $params = array(':listId' => $listId, ':userId' => $userId);
+                $stmt = $db->query($sql, $params);
+            } else {
+                // $listId is found, update the list name
+                $sql = "UPDATE `ToDoLists` SET `ListName` = :listName WHERE `ListID` = :listId AND `UserID` = :userId";
+                $params = array(':listName' => $listName, ':listId' => $listId, ':userId' => $userId);
+                $stmt = $db->query($sql, $params);
+            }
+        }
+        $db->close();
+    }
+
+
+
 }
 
 
@@ -139,8 +183,8 @@ if (count($items) > 0) {
 function addToDoList($listNames, $userId) {
     $db = new Database();
     $listIds = array();
-    for ($i = 0; $i < count($listNames); $i++) {
-        $listName = $listNames[$i];
+    // send_response($listNames);
+    foreach ($listNames as $listName) {
         $sql = "INSERT INTO `ToDoLists` (`UserID`,`ListName`) VALUES (:userId,:listName)";
         $params = array(':userId' => $userId, ':listName' => $listName);
         $stmt = $db->query($sql, $params);
@@ -148,6 +192,7 @@ function addToDoList($listNames, $userId) {
     }
 
     $db->close();
+    return $listIds;
 }
 
 
