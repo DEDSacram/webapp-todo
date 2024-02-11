@@ -109,6 +109,27 @@ body{
   border: 1px solid var(--bs-secondary);
 }
 
+.draggable {
+  display: flex;
+  flex-direction: row;
+  background-color: var(--bs-primary);
+  border: 1px solid var(--bs-secondary);
+  cursor: move;
+}
+
+.draggable p {
+  flex: 1;
+  padding: 1rem;
+  background-color: var(--bs-primary);
+  cursor: pointer;
+
+}
+.draggable p:hover {
+  background-color: var(--bs-hover);
+}
+
+
+
 .button-wrapper{
   display: flex;
   flex-direction: row;
@@ -229,12 +250,7 @@ body{
   fill: var(--bs-secondary);
 }
 
-.draggable {
-  padding: 1rem;
-  background-color: var(--bs-primary);
-  border: 1px solid var(--bs-secondary);
-  cursor: move;
-}
+
 
 
 

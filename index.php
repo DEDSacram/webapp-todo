@@ -50,7 +50,7 @@ ob_end_flush();
   <div class="sidebar" style="width: 0px;">
     <button class="cntrl-btn" onclick="toggleSidebar()">Back</button>
     <div id="manage-tasks" class="hidden">
-      <button class="cntrl-btn" onclick="backToTodoLists()">Backto</button>
+      <button class="cntrl-btn" onclick="backToTodoLists()">BacktoLists</button>
       <button class="cntrl-btn" onclick="addnew()" id="addtask">Add Item</button>
       <button class="cntrl-btn" onclick="createdraggable_new()" id="addtaskdd">Add Subcategory</button>
       <!-- These will be saved too, create an additional db -->
