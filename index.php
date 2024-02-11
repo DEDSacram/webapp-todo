@@ -48,18 +48,18 @@ ob_end_flush();
 <body>
   <!-- Sidebar -->
   <div class="sidebar" style="width: 0px;">
-    <button onclick="toggleSidebar()">Back</button>
+    <button class="cntrl-btn" onclick="toggleSidebar()">Back</button>
     <div id="manage-tasks" class="hidden">
-      <button onclick="backToTodoLists()">Backto</button>
-      <button onclick="addnew()" id="addtask">Add Item</button>
-      <button onclick="createdraggable_new()" id="addtaskdd">Add Subcategory</button>
+      <button class="cntrl-btn" onclick="backToTodoLists()">Backto</button>
+      <button class="cntrl-btn" onclick="addnew()" id="addtask">Add Item</button>
+      <button class="cntrl-btn" onclick="createdraggable_new()" id="addtaskdd">Add Subcategory</button>
       <!-- These will be saved too, create an additional db -->
       <div class="container" id="sidebar-items">
       </div>
     </div>
     <div id="manage_todo_lists">
-      <button onclick="addnewtodolist()">AddList</button>
-      <button onclick="savelists()">Save Lists</button>
+      <button class="cntrl-btn" onclick="addnewtodolist()">AddList</button>
+      <button class="cntrl-btn" onclick="savelists()">Save Lists</button>
       <div id="todo-lists"></div>
     </div>
   </div>
@@ -277,6 +277,7 @@ ob_end_flush();
         
         data.forEach(todoItem => {
           const wrapperDiv = document.createElement("div"); // Create a wrapper div element
+          wrapperDiv.classList.add("todo-list-container"); // Add the class "todo-list"
           const button = document.createElement("p"); // Create a button element
           button.onclick = handleClick; // Set the onclick event to the named function handleClick
           button.textContent = todoItem.ListName;

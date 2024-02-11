@@ -90,9 +90,7 @@ body{
   z-index: 8;
 }
 
-
-
-.sidebar button {
+.cntrl-btn{
   background-color: var(--bs-primary);
   width: 100%;
   padding: 20px;
@@ -104,9 +102,52 @@ body{
   transition: 0.3s;
 }
 
-.sidebar button:hover {
+.todo-list-container{
+  display: flex;
+  flex-direction: row;
+  background-color: var(--bs-primary);
+  border: 1px solid var(--bs-secondary);
+}
+
+.button-wrapper{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--bs-primary);
+}
+.button-wrapper button{
+  height: 100%;
+  background-color: var(--bs-primary);
+  border: none;
+  padding: 0.2rem;
+  border: 1px solid var(--bs-secondary);
+  color: var(--bs-secondary);
+  cursor: pointer;
+}
+
+.button-wrapper button:hover{
   background-color: var(--bs-hover);
 }
+
+.todo-list {
+  flex: 1;
+  padding: 1rem;
+  background-color: var(--bs-primary);
+  cursor: pointer;
+}
+.todo-list:hover {
+  background-color: var(--bs-hover);
+}
+
+
+
+.cntrl-btn:hover{
+  background-color: var(--bs-hover);
+}
+
+
+
 
 .sidebar .close-btn {
   position: absolute;
@@ -196,12 +237,7 @@ body{
 }
 
 
-.todo-list {
-  padding: 1rem;
-  background-color: var(--bs-primary);
-  border: 1px solid var(--bs-secondary);
-  cursor: pointer;
-}
+
 
 .draggable.dragging {
   opacity: .5;
