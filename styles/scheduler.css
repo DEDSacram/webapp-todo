@@ -130,6 +130,21 @@ body{
 
 
 
+.item-wrapper .button-wrapper{
+  background-color: transparent;
+}
+.item-wrapper{
+  display: flex;
+  flex-direction: row;
+}
+.item-wrapper p {
+  flex: 1;
+  padding: 1rem;
+}
+
+
+
+
 .button-wrapper{
   display: flex;
   flex-direction: row;

@@ -220,6 +220,7 @@ function addnew(){
     let pTag = document.createElement("p");
     pTag.textContent = foo;
     let wrapperDiv = document.createElement("div");
+    wrapperDiv.classList.add('item-wrapper');
     wrapperDiv.appendChild(pTag);
     createButtons_item(wrapperDiv);
     div.appendChild(wrapperDiv);
