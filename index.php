@@ -383,13 +383,16 @@ fetch(window.location.origin + "/api/app.php", {
       button.onclick = handleClick;
 
       // Get the value of data-id-new attribute
-      let dataIdNew = TodoLists.firstChild.getAttribute("data-id-new");
-      if (dataIdNew) {
-        // Increment the value by one
-        dataIdNew = parseInt(dataIdNew) + 1;
-      } else {
-        // Set the initial value to 1
-        dataIdNew = 1;
+      let dataIdNew = 0;
+      if (TodoLists.firstChild) {
+        dataIdNew = TodoLists.firstChild.getAttribute("data-id-new");
+        if (dataIdNew) {
+          // Increment the value by one
+          dataIdNew = parseInt(dataIdNew) + 1;
+        } else {
+          // Set the initial value to 1
+          dataIdNew = 1;
+        }
       }
       // Set the data-id-new attribute with the updated value
       button.setAttribute("data-id-new", dataIdNew);
