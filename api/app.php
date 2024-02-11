@@ -23,10 +23,21 @@ function getToDoLists($userId) {
 }
 
 
+function savenew_or_update($userId, $data) {
+    $listId = $data['ListID'];
+    if($data['ListNameArray'] != null){
+        $listNames = $data['ListNameArray'];
+        addToDoList($listNames, $userId);
+    }
+}
 
 
-function getItemsInToDoList($listId, $userId) {
+function getItemsInToDoList($data, $userId) {
     $db = new Database();
+
+    $listId = $data['ListID'];
+
+     // update lists you cant click on one that doesnt exist no error should happen works
     //changed left join to right join to get all the items in the list including null ones in selection (special case)
     $sql = "SELECT 
         ToDoItems.ItemID, 
@@ -110,19 +121,19 @@ if (count($items) > 0) {
     }
 }
 
-function checkifchangedtodolist($userId, $data) {
-    // get current from db
-    $db = new Database();
-    $sql = "SELECT ListID, ListName FROM `ToDoLists` WHERE `UserID` = :userId";
-    $params = array(':userId' => $userId);
-    $stmt = $db->query($sql, $params);
-    $todoLists = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    $db->close();
+// function checkifchangedtodolist($userId, $data) {
+//     // get current from db
+//     $db = new Database();
+//     $sql = "SELECT ListID, ListName FROM `ToDoLists` WHERE `UserID` = :userId";
+//     $params = array(':userId' => $userId);
+//     $stmt = $db->query($sql, $params);
+//     $todoLists = $stmt->fetchAll(PDO::FETCH_ASSOC);
+//     $db->close();
 
-    // compare with new data incoming form the parameter
+//     // compare with new data incoming form the parameter
 
 
-}
+// }
 
 
 function addToDoList($listNames, $userId) {
@@ -137,13 +148,6 @@ function addToDoList($listNames, $userId) {
     }
 
     $db->close();
-
-
-    // Add last inserted IDs into an array
-    $result = array(
-        'lastInsertedIds' => $listIds
-    );
-    send_response($result);
 }
 
 
@@ -507,18 +511,15 @@ switch ($data['action']) {
     case 'gettodolists':
         getToDoLists($userId);
         break;
-    case 'addtodolist':
-        addTodoList($data['ListNameArray'], $userId);
-        break;
     case 'saveall':
         // $listId = $data['ListID'];
         saveall($data['ListID'], $userId, $data['data']);
         break;
-    case 'checkifchangedtodolist':
-        checkifchangedtodolist($userId, $data);
+    case 'savenew_or_update':
+        savenew_or_update($userId, $data);
         break;
     case 'getitemsintodolist':
-        getItemsInToDoList($data['ListID'], $userId);
+        getItemsInToDoList($data, $userId);
         break;
     default:
         send_response([

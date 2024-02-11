@@ -274,114 +274,109 @@ ob_end_flush();
 
       let listId = this.getAttribute("data-id");
       sessionStorage.setItem("currentTodoListNumber", listId);
-      // call to dom
-      if (sessionStorage.getItem('savenewTodoLists') != 'true') {
-        // get list of tasks
-        let formData = new FormData();
-        formData.append("action", "getitemsintodolist");
-        formData.append("ListID", listId);
-        fetch(window.location.origin + "/api/app.php", {
-          method: "POST",
-          body: formData,
-          credentials: 'include' // Include cookies in the request
-        })
-        .then(response => response.json())
-        .then(data => {
-          console.log("before")
-          console.log(data)
-          dynamicallycreateallfromdb(data);
-          sessionStorage.setItem("currentTodoListNumber", this.getAttribute("data-id"));
-        });
-        return;
-      }
 
-      // create an array for form data
+      // get all todolists
       const todoListsContainer = document.getElementById("todo-lists");
-      let array = [];
+      // all new ones will be form the top
+      // edits will be all over the place
 
-      let remembertochange = [];
-
+      // save their elements to change ids in dom later
+      let newones = [];
+      // save their names that have to be saved
+      let newonesnames = [];
+      // check old ones
+      let checkoldones = [];
       for (let i = 0; i < todoListsContainer.children.length; i++) {
         const child = todoListsContainer.children[i];
         // check if you should break by getting into ones that are already in the db
         const listId = child.getAttribute("data-id");
-        if (listId !== null) {
-          break;
+        if (child.getAttribute("data-id-new") !== null) {
+          newones.push(child); 
+          newonesnames.push(child.textContent); // these will be sent out as additions
+          return
         }
-        remembertochange.push(child);
-        array.push(child.textContent); // here we get the same order as we will get last inserted ids from the db
-      }
-      // maybe all were deleted
-      // save new created to-do lists
-      if(remembertochange.length === 0) {
-              // get list of tasks
-              let formData = new FormData();
-        formData.append("action", "getitemsintodolist");
-        formData.append("ListID", listId);
-        fetch(window.location.origin + "/api/app.php", {
-          method: "POST",
-          body: formData,
-          credentials: 'include' // Include cookies in the request
-        })
-        .then(response => response.json())
-        .then(data => {
-          dynamicallycreateallfromdb(data);
-          sessionStorage.setItem("currentTodoListNumber", this.getAttribute("data-id"));
+        checkoldones.push({
+          listId: listId,
+          textContent: child.textContent
         });
-        sessionStorage.removeItem('savenewTodoLists');
-        return;
       }
 
-      // save all the listst that were created
-      let data = {
-        action: "addtodolist",
-        ListNameArray: array
-      };
-      // send the data to the server create new and send back their ids
-      fetch(window.location.origin + "/api/app.php", {
-        method: "POST",
-        body: JSON.stringify(data),
-        credentials: 'include', // Include cookies in the request
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-      .then(response => response.json())
-      .then(data => {
-        remembertochange.forEach((child, index) => {
-          const lastInsertedIds = data.lastInsertedIds;
-          const listId = lastInsertedIds[index];
-            child.removeAttribute('data-id-new');
-            child.setAttribute("data-id", listId);
-        });
-        //set current todolist number
-        sessionStorage.setItem("currentTodoListNumber", this.getAttribute("data-id"));
-        // set that there are no new lists
-        sessionStorage.removeItem('savenewTodoLists');
-      })
-      .catch(error => {
-        console.log("Error:", error);
-      });
 
 
-      // dont need to save new todolists because I already checked if there are any
-      if(listId !== null) {
-              // get list of tasks
-              let formData = new FormData();
-        formData.append("action", "getitemsintodolist");
-        formData.append("ListID", listId);
-        fetch(window.location.origin + "/api/app.php", {
-          method: "POST",
-          body: formData,
-          credentials: 'include' // Include cookies in the request
-        })
-        .then(response => response.json())
-        .then(data => {
-          sessionStorage.setItem("currentTodoListNumber", this.getAttribute("data-id"));
-          dynamicallycreateallfromdb(data);
-        });
-        return;
-      }
+
+
+// Call to savenew_or_update
+let saveFormData = new FormData();
+saveFormData.append("action", "savenew_or_update");
+saveFormData.append("ListID", listId);
+saveFormData.append("ListNameArray", JSON.stringify(newonesnames));
+saveFormData.append("ListNameArrayOld", JSON.stringify(checkoldones));
+fetch(window.location.origin + "/api/app.php", {
+  method: "POST",
+  body: saveFormData,
+  credentials: 'include' // Include cookies in the request
+})
+.then(response => response.json())
+.then(data => {
+  console.log(data);
+})
+.catch(error => {
+  console.log("Error:", error);
+});
+
+
+
+   
+// get list of tasks
+let formData = new FormData();
+formData.append("action", "getitemsintodolist");
+formData.append("ListID", listId);
+fetch(window.location.origin + "/api/app.php", {
+  method: "POST",
+  body: formData,
+  credentials: 'include' // Include cookies in the request
+})
+.then(response => response.json())
+.then(data => {
+  console.log(data)
+  dynamicallycreateallfromdb(data);
+  sessionStorage.setItem("currentTodoListNumber", this.getAttribute("data-id"));
+});
+
+
+
+ 
+
+      // // not all were deleted, save is in order
+      // let data = {
+      //   action: "addtodolist",
+      //   ListNameArray: array
+      // };
+      // // send the data to the server create new and send back their ids
+      // fetch(window.location.origin + "/api/app.php", {
+      //   method: "POST",
+      //   body: JSON.stringify(data),
+      //   credentials: 'include', // Include cookies in the request
+      //   headers: {
+      //     'Content-Type': 'application/json'
+      //   }
+      // })
+      // .then(response => response.json())
+      // .then(data => {
+      //   remembertochange.forEach((child, index) => {
+      //     const lastInsertedIds = data.lastInsertedIds;
+      //     const listId = lastInsertedIds[index];
+      //       child.removeAttribute('data-id-new');
+      //       child.setAttribute("data-id", listId);
+      //   });
+      //   //set current todolist number
+      //   sessionStorage.setItem("currentTodoListNumber", this.getAttribute("data-id"));
+      //   // set that there are no new lists
+      // })
+      // .catch(error => {
+      //   console.log("Error:", error);
+      // });
+
 
     }
 
@@ -400,7 +395,6 @@ ob_end_flush();
       if (ListName == null || ListName == "") {
         return;
       }
-      sessionStorage.setItem('savenewTodoLists', 'true');
 
       const TodoLists = document.getElementById("todo-lists");
       const button = document.createElement("button");
