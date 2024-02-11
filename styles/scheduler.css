@@ -130,7 +130,9 @@ body{
   width: calc(100vw - 250px); /* reduce width by sidebar width */
 }
 
-
+.icon{
+  cursor: pointer;
+}
 
 .hidden{
   display: none;
@@ -178,6 +180,7 @@ body{
   flex-direction: column;
   position: absolute;
   z-index: 5;
+  cursor:pointer;
 }
 
 #Hamburgur svg{
