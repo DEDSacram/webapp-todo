@@ -8,11 +8,6 @@ class Database {
     private $conn;
     
     public function __construct() {
-        $servername = "127.0.0.1"; // Use localhost or 127.0.0.1 since it's on the host machine
-        $port = 3306; // Use the port number you need
-        $username = "admin";
-        $password = "admin12345";
-        $database = "bmwa";
         try {
 
             $this->conn = new PDO("mysql:host=" . DB_SERVER . ";port=" . DB_PORT . ";dbname=" . DB_NAME, DB_USERNAME, DB_PASSWORD);
