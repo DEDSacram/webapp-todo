@@ -332,22 +332,24 @@ fetch(window.location.origin + "/api/app.php", {
 
 
 
+
+
    
 // get list of tasks
-// let formData = new FormData();
-// formData.append("action", "getitemsintodolist");
-// formData.append("ListID", listId);
-// fetch(window.location.origin + "/api/app.php", {
-//   method: "POST",
-//   body: formData,
-//   credentials: 'include' // Include cookies in the request
-// })
-// .then(response => response.json())
-// .then(data => {
-//   console.log(data)
-//   dynamicallycreateallfromdb(data);
-//   sessionStorage.setItem("currentTodoListNumber", this.getAttribute("data-id"));
-// });
+let formData = new FormData();
+formData.append("action", "getitemsintodolist");
+formData.append("ListID", listId);
+fetch(window.location.origin + "/api/app.php", {
+  method: "POST",
+  body: formData,
+  credentials: 'include' // Include cookies in the request
+})
+.then(response => response.json())
+.then(data => {
+  console.log(data)
+  dynamicallycreateallfromdb(data);
+  sessionStorage.setItem("currentTodoListNumber", this.getAttribute("data-id"));
+});
 
 
 

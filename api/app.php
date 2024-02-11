@@ -166,21 +166,6 @@ if (count($items) > 0) {
     }
 }
 
-// function checkifchangedtodolist($userId, $data) {
-//     // get current from db
-//     $db = new Database();
-//     $sql = "SELECT ListID, ListName FROM `ToDoLists` WHERE `UserID` = :userId";
-//     $params = array(':userId' => $userId);
-//     $stmt = $db->query($sql, $params);
-//     $todoLists = $stmt->fetchAll(PDO::FETCH_ASSOC);
-//     $db->close();
-
-//     // compare with new data incoming form the parameter
-
-
-// }
-
-
 function addToDoList($listNames, $userId) {
     $db = new Database();
     $listIds = array();
