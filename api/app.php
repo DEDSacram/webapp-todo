@@ -5,7 +5,7 @@ ini_set('display_startup_errors', 1);
 ini_set('display_errors', 1);
 error_reporting(-1);
 
-
+// couuld reuse will not
 function getToDoLists($userId) {
     $db = new Database();
     $sql = "SELECT `ListID`, `ListName` FROM `ToDoLists` WHERE `UserID` = :userId";
@@ -110,7 +110,19 @@ if (count($items) > 0) {
     }
 }
 
+function checkifchangedtodolist($userId, $data) {
+    // get current from db
+    $db = new Database();
+    $sql = "SELECT ListID, ListName FROM `ToDoLists` WHERE `UserID` = :userId";
+    $params = array(':userId' => $userId);
+    $stmt = $db->query($sql, $params);
+    $todoLists = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $db->close();
 
+    // compare with new data incoming form the parameter
+
+
+}
 
 
 function addToDoList($listNames, $userId) {
@@ -133,6 +145,7 @@ function addToDoList($listNames, $userId) {
     );
     send_response($result);
 }
+
 
 class Difference {
     public $itemId;
@@ -500,7 +513,9 @@ switch ($data['action']) {
     case 'saveall':
         // $listId = $data['ListID'];
         saveall($data['ListID'], $userId, $data['data']);
-        
+        break;
+    case 'checkifchangedtodolist':
+        checkifchangedtodolist($userId, $data);
         break;
     case 'getitemsintodolist':
         getItemsInToDoList($data['ListID'], $userId);

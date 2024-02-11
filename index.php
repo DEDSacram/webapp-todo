@@ -274,7 +274,6 @@ ob_end_flush();
 
       let listId = this.getAttribute("data-id");
       sessionStorage.setItem("currentTodoListNumber", listId);
-      // save new created to-do lists
       // call to dom
       if (sessionStorage.getItem('savenewTodoLists') != 'true') {
         // get list of tasks
@@ -313,6 +312,7 @@ ob_end_flush();
         array.push(child.textContent); // here we get the same order as we will get last inserted ids from the db
       }
       // maybe all were deleted
+      // save new created to-do lists
       if(remembertochange.length === 0) {
               // get list of tasks
               let formData = new FormData();
@@ -332,7 +332,7 @@ ob_end_flush();
         return;
       }
 
-      // save all these
+      // save all the listst that were created
       let data = {
         action: "addtodolist",
         ListNameArray: array
