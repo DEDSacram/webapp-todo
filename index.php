@@ -51,14 +51,15 @@ ob_end_flush();
     <button onclick="toggleSidebar()">Back</button>
     <div id="manage-tasks" class="hidden">
       <button onclick="backToTodoLists()">Backto</button>
-      <button onclick="addnew()" id="addtask">+</button>
-      <button onclick="createdraggable_new()" id="addtaskdd">+</button>
+      <button onclick="addnew()" id="addtask">Add Item</button>
+      <button onclick="createdraggable_new()" id="addtaskdd">Add Subcategory</button>
       <!-- These will be saved too, create an additional db -->
       <div class="container" id="sidebar-items">
       </div>
     </div>
     <div id="manage_todo_lists">
-      <button onclick="addnewtodolist()">+</button>
+      <button onclick="addnewtodolist()">AddList</button>
+      <button onclick="savelists()">Save Lists</button>
       <div id="todo-lists"></div>
     </div>
   </div>
@@ -269,13 +270,7 @@ ob_end_flush();
       });
     }
 
-    function handleClick() {
-      // should hide only if call is successful we assume it is, because 
-      const manageTodoLists = document.getElementById("manage_todo_lists");
-      manage_todo_lists.classList.add("hidden");
-
-      const managetasks = document.getElementById("manage-tasks");
-      managetasks.classList.remove("hidden");
+    function savelists(){
 
       // get all todolists
       const todoListsContainer = document.getElementById("todo-lists");
@@ -335,8 +330,17 @@ fetch(window.location.origin + "/api/app.php", {
 .catch(error => {
   console.log("Error:", error);
 });
+    }
 
+    function handleClick() {
+      // should hide only if call is successful we assume it is, because 
+      const manageTodoLists = document.getElementById("manage_todo_lists");
+      manage_todo_lists.classList.add("hidden");
 
+      const managetasks = document.getElementById("manage-tasks");
+      managetasks.classList.remove("hidden");
+      // save alll lists
+      savelists()
 
 let listId = this.getAttribute("data-id"); // get current
 
