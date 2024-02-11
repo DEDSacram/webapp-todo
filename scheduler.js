@@ -62,7 +62,7 @@ function createButtons_lists(div) {
   changeTextButton.addEventListener('click', () => {
     const newText = prompt('Enter new text:');
     if (newText !== null) {
-      div.querySelector('button').textContent = newText;
+      div.querySelector('p').textContent = newText;
     }
   });
   buttonWrapper.appendChild(changeTextButton);

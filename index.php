@@ -276,12 +276,17 @@ ob_end_flush();
       
         
         data.forEach(todoItem => {
-          const button = document.createElement("button"); // Create a button element
-          button.setAttribute("data-id", todoItem.ListID);
-          button.textContent = todoItem.ListName;
-          button.classList.add("todo-list"); // Add the class "todo-list"
+          const wrapperDiv = document.createElement("div"); // Create a wrapper div element
+          const button = document.createElement("p"); // Create a button element
           button.onclick = handleClick; // Set the onclick event to the named function handleClick
-          container.insertBefore(button, container.firstChild);
+          button.textContent = todoItem.ListName;
+
+          button.setAttribute("data-id", todoItem.ListID);
+          button.classList.add("todo-list"); // Add the class "todo-list"
+  
+          wrapperDiv.appendChild(button); // Append the button to the wrapper div
+          createButtons_lists(wrapperDiv); // Create buttons for the wrapper div (edit and delete buttons)
+          container.insertBefore(wrapperDiv, container.firstChild); // Insert the wrapper div before the first child of the container
         });
       })
       .catch(error => {
@@ -293,6 +298,9 @@ ob_end_flush();
 
       // get all todolists
       const todoListsContainer = document.getElementById("todo-lists");
+
+      const todoListElements = todoListsContainer.getElementsByClassName("todo-list");
+      
       // all new ones will be form the top
       // edits will be all over the place
 
@@ -302,8 +310,9 @@ ob_end_flush();
       let newonesnames = [];
       // check old ones
       let checkoldones = [];
-      for (let i = 0; i < todoListsContainer.children.length; i++) {
-        const child = todoListsContainer.children[i];
+
+      for (let i = 0; i <  todoListElements.length; i++) {
+        const child = todoListElements[i];
         // check if you should break by getting into ones that are already in the db
         const listId = child.getAttribute("data-id");
         if (child.getAttribute("data-id-new") != null) {
@@ -316,6 +325,8 @@ ob_end_flush();
           textContent: child.textContent
         });
       }
+
+      console.log(todoListsContainer.children)
 
 
 
@@ -391,6 +402,19 @@ fetch(window.location.origin + "/api/app.php", {
       managetasks.classList.add("hidden");
     }
 
+
+    // const wrapperDiv = document.createElement("div"); // Create a wrapper div element
+    //       const button = document.createElement("p"); // Create a button element
+    //       button.onclick = handleClick; // Set the onclick event to the named function handleClick
+    //       button.textContent = todoItem.ListName;
+
+    //       button.setAttribute("data-id", todoItem.ListID);
+    //       button.classList.add("todo-list"); // Add the class "todo-list"
+  
+    //       wrapperDiv.appendChild(button); // Append the button to the wrapper div
+    //       createButtons_lists(wrapperDiv); // Create buttons for the wrapper div (edit and delete buttons)
+    //       container.insertBefore(wrapperDiv, container.firstChild); // Insert the wrapper div before the first child of the container
+
     function addnewtodolist() {
       let ListName = prompt('Type list name');
       if (ListName == null || ListName == "") {
@@ -398,7 +422,10 @@ fetch(window.location.origin + "/api/app.php", {
       }
       //onto adding buttons to this
       const TodoLists = document.getElementById("todo-lists");
-      const button = document.createElement("button");
+
+      const wrapperDiv = document.createElement("div");
+
+      const button = document.createElement("p");
       button.textContent = ListName;
       button.classList.add("todo-list");
       button.onclick = handleClick;
@@ -418,7 +445,10 @@ fetch(window.location.origin + "/api/app.php", {
       // Set the data-id-new attribute with the updated value
       button.setAttribute("data-id-new", dataIdNew);
 
-      TodoLists.insertBefore(button, TodoLists.firstChild);
+      wrapperDiv.appendChild(button);
+      createButtons_lists(wrapperDiv);
+   
+      TodoLists.insertBefore(wrapperDiv, TodoLists.firstChild);
     }
 
     generateTodoLists();
