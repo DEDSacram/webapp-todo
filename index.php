@@ -277,7 +277,7 @@ ob_end_flush();
       });
     }
 
-    function savelists(){
+    async function savelists(){
 
       // get all todolists
       const todoListsContainer = document.getElementById("todo-lists");
@@ -315,7 +315,7 @@ let saveData = {
   ListNameArrayOld: checkoldones
 };
 
-fetch(window.location.origin + "/api/app.php", {
+await fetch(window.location.origin + "/api/app.php", {
   method: "POST",
   body: JSON.stringify(saveData),
   headers: {
@@ -326,20 +326,20 @@ fetch(window.location.origin + "/api/app.php", {
 .then(response => response.json())
 .then(data => {
   newones.forEach((child, index) => {
-          const lastInsertedIds = data.savedListIds;
-          const listId = lastInsertedIds[index];
-            child.removeAttribute('data-id-new');
-            child.setAttribute("data-id", listId);
-        });
+    const lastInsertedIds = data.savedListIds;
+    const listId = lastInsertedIds[index];
+    child.removeAttribute('data-id-new');
+    child.setAttribute("data-id", listId);
+  });
 
-        console.log(data)
+  console.log(data)
 })
 .catch(error => {
   console.log("Error:", error);
 });
     }
 
-    function handleClick() {
+    async function handleClick() {
       // should hide only if call is successful we assume it is, because 
       const manageTodoLists = document.getElementById("manage_todo_lists");
       manage_todo_lists.classList.add("hidden");
@@ -347,11 +347,9 @@ fetch(window.location.origin + "/api/app.php", {
       const managetasks = document.getElementById("manage-tasks");
       managetasks.classList.remove("hidden");
       // save alll lists
-      savelists()
+      await savelists()
 
 let listId = this.getAttribute("data-id"); // get current
-
-   
 // get list of tasks
 let formData = new FormData();
 formData.append("action", "getitemsintodolist");
