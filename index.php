@@ -277,9 +277,6 @@ ob_end_flush();
       const managetasks = document.getElementById("manage-tasks");
       managetasks.classList.remove("hidden");
 
-      let listId = this.getAttribute("data-id");
-      sessionStorage.setItem("currentTodoListNumber", listId);
-
       // get all todolists
       const todoListsContainer = document.getElementById("todo-lists");
       // all new ones will be form the top
@@ -308,16 +305,13 @@ ob_end_flush();
 
 
 
-  
+
 // Call to savenew_or_update
 let saveData = {
   action: "savenew_or_update",
-  ListID: listId,
   ListNameArray: newonesnames,
   ListNameArrayOld: checkoldones
 };
-
-console.log(saveData);
 
 fetch(window.location.origin + "/api/app.php", {
   method: "POST",
@@ -329,7 +323,14 @@ fetch(window.location.origin + "/api/app.php", {
 })
 .then(response => response.json())
 .then(data => {
-  console.log(data);
+  newones.forEach((child, index) => {
+          const lastInsertedIds = data.savedListIds;
+          const listId = lastInsertedIds[index];
+            child.removeAttribute('data-id-new');
+            child.setAttribute("data-id", listId);
+        });
+
+        console.log(data)
 })
 .catch(error => {
   console.log("Error:", error);
@@ -337,7 +338,7 @@ fetch(window.location.origin + "/api/app.php", {
 
 
 
-
+let listId = this.getAttribute("data-id"); // get current
 
    
 // get list of tasks
@@ -351,47 +352,13 @@ fetch(window.location.origin + "/api/app.php", {
 })
 .then(response => response.json())
 .then(data => {
-  console.log(data)
+  sessionStorage.setItem("currentTodoListNumber", listId);
   dynamicallycreateallfromdb(data);
-  sessionStorage.setItem("currentTodoListNumber", this.getAttribute("data-id"));
 });
 
 
 
- 
-
-      // // not all were deleted, save is in order
-      // let data = {
-      //   action: "addtodolist",
-      //   ListNameArray: array
-      // };
-      // // send the data to the server create new and send back their ids
-      // fetch(window.location.origin + "/api/app.php", {
-      //   method: "POST",
-      //   body: JSON.stringify(data),
-      //   credentials: 'include', // Include cookies in the request
-      //   headers: {
-      //     'Content-Type': 'application/json'
-      //   }
-      // })
-      // .then(response => response.json())
-      // .then(data => {
-      //   remembertochange.forEach((child, index) => {
-      //     const lastInsertedIds = data.lastInsertedIds;
-      //     const listId = lastInsertedIds[index];
-      //       child.removeAttribute('data-id-new');
-      //       child.setAttribute("data-id", listId);
-      //   });
-      //   //set current todolist number
-      //   sessionStorage.setItem("currentTodoListNumber", this.getAttribute("data-id"));
-      //   // set that there are no new lists
-      // })
-      // .catch(error => {
-      //   console.log("Error:", error);
-      // });
-
-
-    }
+}
 
     function backToTodoLists() {
       saveall();

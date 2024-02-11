@@ -24,22 +24,21 @@ function getToDoLists($userId) {
 
 
 function savenew_or_update($userId, $data) {
-    // $listId = $data['ListID'];
-
-    $savedListIds = array();
-    if (!empty($data['ListNameArray'])) {
-        $listNames = $data['ListNameArray'];
-        $savedListIds = addToDoList($listNames, $userId);
-    }
-
-
+    // do it before to get the state without the new inserts
     $db = new Database();
     $sql = "SELECT `ListID`, `ListName` FROM `ToDoLists` WHERE `UserID` = :userId";
     $params = array(':userId' => $userId);
     $stmt = $db->query($sql, $params);
     $todoLists = $stmt->fetchAll(PDO::FETCH_ASSOC);
     $db->close();
-    // check from old
+
+    // insert new
+    $savedListIds = array();
+    if (!empty($data['ListNameArray'])) {
+        $listNames = $data['ListNameArray'];
+        $savedListIds = addToDoList($listNames, $userId);
+    }
+
 
     if ($data['ListNameArrayOld'] != null) {
         $listNamesOld = $data['ListNameArrayOld'];
@@ -59,10 +58,28 @@ function savenew_or_update($userId, $data) {
             }
     
             if (!$listIdFound) {
-                // $listId is not found in $listNamesOld, consider it as deleted
-                $sql = "DELETE FROM `ToDoLists` WHERE `ListID` = :listId AND `UserID` = :userId";
-                $params = array(':listId' => $listId, ':userId' => $userId);
+             // First, fetch all ToDoItemIDs associated with the ListID
+            $sql = "SELECT `ItemID` FROM `ToDoItems` WHERE `ListID` = :listId";
+            $params = array(':listId' => $listId);
+            $stmt = $db->query($sql, $params);
+            $todoItemIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+            // Then, delete the associated records from the Subcategories table
+            foreach ($todoItemIds as $todoItemId) {
+                $sql = "DELETE FROM `Subcategories` WHERE `ItemID` = :todoItemId";
+                $params = array(':todoItemId' => $todoItemId);
                 $stmt = $db->query($sql, $params);
+            }
+
+            // Next, delete the associated records from the ToDoItems table
+            $sql = "DELETE FROM `ToDoItems` WHERE `ListID` = :listId";
+            $params = array(':listId' => $listId);
+            $stmt = $db->query($sql, $params);
+
+            // Finally, delete the record from the ToDoLists table
+            $sql = "DELETE FROM `ToDoLists` WHERE `ListID` = :listId AND `UserID` = :userId";
+            $params = array(':listId' => $listId, ':userId' => $userId);
+            $stmt = $db->query($sql, $params);
             } else {
                 // $listId is found, update the list name
                 $sql = "UPDATE `ToDoLists` SET `ListName` = :listName WHERE `ListID` = :listId AND `UserID` = :userId";
