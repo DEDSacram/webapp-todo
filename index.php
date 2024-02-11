@@ -259,10 +259,22 @@ ob_end_flush();
         body: formData,
         credentials: 'include' // Include cookies in the request
       })
-      .then(response => response.json())
+      .then(response => {
+        if (response.status === 404) {
+          return; // Do not continue if response is 404
+        }
+        return response.json();
+      })
       .then(data => {
+
+        if (!data) {
+          return; // Do not continue if data is empty
+        }
         const container = document.getElementById("todo-lists");
         container.innerHTML = "";
+
+      
+        
         data.forEach(todoItem => {
           const button = document.createElement("button"); // Create a button element
           button.setAttribute("data-id", todoItem.ListID);
