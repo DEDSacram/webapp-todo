@@ -26,9 +26,10 @@ function getToDoLists($userId) {
 function savenew_or_update($userId, $data) {
     // $listId = $data['ListID'];
 
+    $savedListIds = array();
     if (!empty($data['ListNameArray'])) {
         $listNames = $data['ListNameArray'];
-        addToDoList($listNames, $userId);
+        $savedListIds = addToDoList($listNames, $userId);
     }
 
 
@@ -72,7 +73,11 @@ function savenew_or_update($userId, $data) {
         $db->close();
     }
 
-
+    send_response([
+        'status' => 1,
+        'message' => 'Lists saved successfully',
+        'savedListIds' => $savedListIds,
+    ]);
 
 }
 

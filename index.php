@@ -174,14 +174,19 @@ ob_end_flush();
 
         // Create a <p> tag with class "draggable" and draggable set to true
     function dynamicallycreateallfromdb(dataobject) {
-      //selection from sidebar
-      const sidebarItemsContainer = document.getElementById("sidebar-items");
-      sidebarItemsContainer.innerHTML = "";
-      dataobject.selection.forEach(item => {
-        createdraggable_sidebar( sidebarItemsContainer,item)
-      });
+      //selection from sidebar // will not be implemented
+      // const sidebarItemsContainer = document.getElementById("sidebar-items");
+      // sidebarItemsContainer.innerHTML = "";
+      // dataobject.selection.forEach(item => {
+      //   createdraggable_sidebar( sidebarItemsContainer,item)
+      // });
 
       //create todoitems and its subcategories
+
+      if (typeof dataobject.display === 'undefined') {
+        return;
+      }
+
       dataobject.display.forEach(item => {
     const main = document.getElementById('main-container');
     let div = document.createElement("div");
@@ -451,7 +456,7 @@ fetch(window.location.origin + "/api/app.php", {
         });
       }
     });
-    createcolorpicker('canvas', 'sidepicker', 'colorpreview');
+    // createcolorpicker('canvas', 'sidepicker', 'colorpreview');
   </script>
 </body>
 </html>
