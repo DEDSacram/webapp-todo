@@ -43,23 +43,22 @@ function savenew_or_update($userId, $data) {
     if ($data['ListNameArrayOld'] != null) {
         $listNamesOld = $data['ListNameArrayOld'];
         $db = new Database();
-        foreach ($listNamesOld as $list) {
-            $listId = $list['listId'];
-            $listName = $list['textContent'];
-
-            // Check if $listId is not found in $todoLists
+        foreach ($todoLists as $todoList) {
+            $listId = $todoList['ListID'];
+    
+            // Check if $listId is found in $listNamesOld
             $listIdFound = false;
-
-         
-            foreach ($todoLists as $todoList) {
-                if ($todoList['ListID'] == $listId) {
+    
+            foreach ($listNamesOld as $list) {
+                if ($list['listId'] == $listId) {
                     $listIdFound = true;
+                    $listName = $list['textContent'];
                     break;
                 }
             }
-
+    
             if (!$listIdFound) {
-                // $listId is not found in $todoLists, consider it as deleted
+                // $listId is not found in $listNamesOld, consider it as deleted
                 $sql = "DELETE FROM `ToDoLists` WHERE `ListID` = :listId AND `UserID` = :userId";
                 $params = array(':listId' => $listId, ':userId' => $userId);
                 $stmt = $db->query($sql, $params);
