@@ -41,6 +41,45 @@ function createButtons(div) {
   div.appendChild(buttonWrapper);
 }
 
+function createButtons_lists(div) {
+  // Create a div wrapper for the buttons
+  const buttonWrapper = document.createElement('div');
+  buttonWrapper.classList.add('button-wrapper');
+
+  // Create a button element for removing
+  const removeButton = document.createElement('button');
+  removeButton.textContent = 'X';
+  removeButton.classList.add('remove-button');
+  removeButton.addEventListener('click', () => {
+    div.remove();
+  });
+  buttonWrapper.appendChild(removeButton);
+
+  // Create a button element for changing text content
+  const changeTextButton = document.createElement('button');
+  changeTextButton.textContent = 'Change Text';
+  changeTextButton.classList.add('change-text-button');
+  changeTextButton.addEventListener('click', () => {
+    const newText = prompt('Enter new text:');
+    if (newText !== null) {
+      div.querySelector('button').textContent = newText;
+    }
+  });
+  buttonWrapper.appendChild(changeTextButton);
+
+  // // Create a button element for marking as completed
+  // const completeButton = document.createElement('button');
+  // completeButton.textContent = 'Mark as Completed';
+  // completeButton.classList.add('complete-button');
+  // completeButton.addEventListener('click', () => {
+  //   div.classList.toggle('completed');
+  // });
+  // buttonWrapper.appendChild(completeButton);
+
+  // Append the button wrapper to the div
+  div.appendChild(buttonWrapper);
+}
+
 function createButtons_item(div) {
   // Create a div wrapper for the buttons
   const buttonWrapper = document.createElement('div');
