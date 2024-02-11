@@ -19,7 +19,7 @@
           <a id="brandname" href="#">ScheduWise</a>
         </li>
         <li>
-          <a href="#">Co nabizime?</a>
+          <a href="#aboutus">Co nabizime?</a>
         </li>
       </ul>
     </div>
@@ -111,7 +111,7 @@
       </div>
     </div>
   </section>
-  <section class="category_section layout_padding">
+  <section class="category_section layout_padding" id="aboutus">
     <div class="container">
       <h2> Proc si vybrat nas </h2>
       <ul id="reasons">
